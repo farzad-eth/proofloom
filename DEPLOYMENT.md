@@ -1,0 +1,48 @@
+# Proofloom Deployment Verification
+
+**Status:** Verified on GenLayer Studionet  
+**Contract address:** [`0x603982018aDee45d123bc7a4B157120d106aA867`](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867)  
+**Network:** GenLayer Studionet  
+**Verification date:** 2026-09-14
+
+## Conclusion
+
+Proofloom now has a deployed, publicly inspectable **Intelligent Contract** on GenLayer Studionet. The contract stores a committed delivery rubric and its external hash, accepts an evidence packet and packet hash, uses GenLayer's non-comparative Equivalence Principle to reach a normalized adjudication outcome, and exposes an appeal state. The public product remains available at [proofloom-one.vercel.app](https://proofloom-one.vercel.app), and its source repository is [farzad-eth/proofloom](https://github.com/farzad-eth/proofloom).
+
+> **Scope limit:** This deployment is a testnet adjudication contract. It does not custody, release, or transfer production funds. A real escrow module requires explicit authorization, economic accounting, and an independent security review.
+
+## Verification record
+
+| Check | Result | Evidence |
+|---|---|---|
+| Contract schema compilation | Passed | The Studionet RPC detected the two constructor fields and all four public methods. |
+| Testnet deployment | Passed | The deployment reached `ACCEPTED`, then `FINALIZED`, at the address above. |
+| Initial state read | Passed | `get_status()` returned `PENDING:HELD:NONE:0`. |
+| Consensus adjudication | Passed | A full-consensus simulation completed against a climate-brief packet containing citations, a confidence statement, and limitations. |
+| Public web application | Passed | The hosted Decision Desk renders its evidence trail, rubric, dispute state, and resolution simulation. |
+| Public repository | Passed | The repository is publicly reachable and contains the site, submission copy, contract, and this verification record. |
+
+## Contract behavior
+
+The contract is written in Python for the current Studio runtime. The persisted `confidence` field uses `u16` rather than Python `int`, because persisted GenLayer fields must use a fixed-size integer type or `bigint`. The constructor takes a rubric and a SHA-256 commitment. `adjudicate` supplies the rubric and packet as data to `prompt_non_comparative`, accepts only `ACCEPT`, `REVISE`, or `REJECT`, and writes state only after consensus returns. `open_appeal` holds settlement and reopens a recorded decision for another review.
+
+GenLayer requires LLM-backed or otherwise variable operations to execute within an approved non-deterministic consensus pattern, while persistent state updates occur only after consensus. Proofloom follows this separation. The current implementation also treats rubric and evidence text as untrusted input in its adjudication criteria.
+
+## Security posture and next production step
+
+The deployment deliberately excludes token custody. The primary remaining controls are authentication and financial logic: authorized buyer and seller roles, exact asset accounting, replay protection, deadline rules, appeal bonds, and an audited settlement module. These are not cosmetic additions; they are required before using Proofloom with valuable assets.
+
+| Area | Current testnet behavior | Required before production |
+|---|---|---|
+| Adjudication | Consensus-based decision over a rubric and packet | Keep the normalized-output guard and add explicit policy/version controls. |
+| Authorization | Open Studio test account flow | Restrict agreement, adjudication, and appeal calls to defined parties. |
+| Funds | No fund transfer or custody | Use audited escrow accounting and token-transfer integration. |
+| Appeals | State is held and re-review is permitted | Add deadlines, bonds, payer/payee roles, and a bounded appeal policy. |
+| Evidence commitments | Rubric and packet hashes are supplied and recorded | Enforce on-chain or verifier-backed hash validation and signed artifact references. |
+
+## References
+
+[1]: https://docs.genlayer.com/developers/intelligent-contracts/features/non-determinism "GenLayer Documentation: Non-determinism"
+[2]: https://docs.genlayer.com/developers/intelligent-contracts/storage "GenLayer Documentation: Persisting data on the blockchain"
+[3]: https://docs.genlayer.com/developers/intelligent-contracts/tools/genlayer-studio/deploying-contract "GenLayer Documentation: Deploy Contracts"
+[4]: https://docs.genlayer.com/developers/networks "GenLayer Documentation: Networks"
