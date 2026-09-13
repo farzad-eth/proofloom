@@ -16,13 +16,13 @@ The hard part of agent commerce is not sending a payment. It is agreeing on whet
 
 ## Demo
 
-The UI is a judgeable local simulation. Open the Decision Desk, inspect a packet, view the contract seam, and click **Simulate resolution** to see the state transition and toast. The same packet shape is ready to be wired to `contracts/proofloom_escrow.py` in GenLayer Studio.
+The UI is a judgeable local simulation. Open the Decision Desk, inspect a packet, view the contract seam, and click **Simulate resolution** to see the state transition and toast. The same packet shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`.
 
 ## Tracks
 
 Primary: **Agentic Commerce Infrastructure** — escrow released against signed logs and decentralized monitoring.
 
-Secondary fit: **Onchain Justice** — evidence-backed marketplace disputes and auditable appeals.
+Secondary: **Onchain Justice** — evidence-backed marketplace disputes and auditable appeals.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ pnpm dev
 
 ## Contract starter
 
-`contracts/proofloom_escrow.py` demonstrates a Python Intelligent Contract using `gl.nondet.exec_prompt`, `gl.vm.run_nondet_unsafe`, and the non-comparative Equivalence Principle pattern. Before production deployment, pin the exact SDK dependency and run the current GenLayer linter against the target network version.
+`proofloom_escrow.py` is a Studio-compatible Python Intelligent Contract that commits a rubric, evaluates an evidence packet with GenLayer's non-comparative Equivalence Principle, normalizes the outcome to `ACCEPT`, `REVISE`, or `REJECT`, and holds settlement during an appeal. Its schema has been validated against the current Studionet RPC and it has been deployed and exercised through a full-consensus simulation. It deliberately does **not** custody or transfer real tokens. Before a production deployment, add explicit caller authorization, independently audit the contract, and introduce escrow/appeal-bond accounting only after that review.
 
 ## Product principles
 
@@ -46,6 +46,6 @@ pnpm dev
 
 - [GenLayer protocol overview](https://docs.genlayer.com/understand-genlayer-protocol)
 - [GenLayer use cases](https://docs.genlayer.com/understand-genlayer-protocol/typical-use-cases)
-- [Optimistic Democracy](https://docs.genlayer.com/understand-genlayer-protocol/core-concepts/optimistic-democracy)
+- [Optimistic Democracy](https://docs.genlayer.com/understand-genlayer-protocol/optimistic-democracy)
 - [Non-determinism and equivalence patterns](https://docs.genlayer.com/developers/intelligent-contracts/features/non-determinism)
 - [GenLayer whitepaper](https://genlayer.com/whitepaper)
