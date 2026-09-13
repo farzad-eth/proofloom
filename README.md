@@ -22,7 +22,7 @@ The UI is a judgeable local simulation. Open the Decision Desk, inspect a packet
 
 Primary: **Agentic Commerce Infrastructure** — escrow released against signed logs and decentralized monitoring.
 
-Secondary: **Onchain Justice** — evidence-backed marketplace disputes and auditable appeals.
+Secondary fit: **Onchain Justice** — evidence-backed marketplace disputes and auditable appeals.
 
 ## Run locally
 
@@ -46,6 +46,6 @@ pnpm dev
 
 - [GenLayer protocol overview](https://docs.genlayer.com/understand-genlayer-protocol)
 - [GenLayer use cases](https://docs.genlayer.com/understand-genlayer-protocol/typical-use-cases)
-- [Optimistic Democracy](https://docs.genlayer.com/understand-genlayer-protocol/optimistic-democracy)
+- [Optimistic Democracy](https://docs.genlayer.com/understand-genlayer-protocol/core-concepts/optimistic-democracy)
 - [Non-determinism and equivalence patterns](https://docs.genlayer.com/developers/intelligent-contracts/features/non-determinism)
 - [GenLayer whitepaper](https://genlayer.com/whitepaper)

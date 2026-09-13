@@ -12,9 +12,9 @@ Most agentic commerce demos stop at a marketplace, a wallet, or a prediction. Pr
 
 1. Open the Decision Desk and select **Climate brief · Europe Q3**.
 2. Inspect the evidence trail, attached rubric, confidence, and validator count.
-3. Open **View contract** to see the GenLayer seam.
+3. Open **View contract** to see the GenLayer seam and inspect the deployed [Studionet contract](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867).
 4. Click **Simulate resolution** and observe the status, confidence, and consensus toast update.
-5. Read `contracts/proofloom_escrow.py` to see how the local experience maps to a real Intelligent Contract.
+5. Read `proofloom_escrow.py` to see the Studio-compatible Intelligent Contract that implements the adjudication and appeal state machine.
 
 ## Why it is practical
 
@@ -29,9 +29,10 @@ Primary: Agentic Commerce Infrastructure. Secondary: Onchain Justice.
 - Responsive operator console with real interaction states.
 - Evidence trail, rubric hash, packet status, confidence bar, escrow metric, and network health surfaces.
 - Local simulation of a 5-validator resolution state transition.
-- GenLayer Intelligent Contract starter using non-deterministic execution and equivalence-based validation.
+- Schema-validated GenLayer Intelligent Contract using non-comparative equivalence-based validation, deployed on Studionet at [`0x603982018aDee45d123bc7a4B157120d106aA867`](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867).
+- A successful full-consensus adjudication simulation against a committed climate-brief rubric and hashed evidence packet.
 - README with architecture, threat model notes, and source links.
 
 ## Next milestone after the tank
 
-Connect the packet schema to GenLayer Studio, add wallet-funded escrow, expose an appeal bond flow, and publish signed validator receipts alongside the resolved artifact.
+Add real token custody only after an independent security review; then introduce caller authorization, appeal-bond accounting, and signed validator receipts alongside the resolved artifact.
