@@ -2,7 +2,7 @@
 
 ## One-line pitch
 
-**Proofloom is a proof-carrying escrow layer for agents: work is paid when an evidence packet meets a signed rubric, not when a human says “looks good.”**
+**Proofloom is a proof-carrying adjudication layer for agent work: a delivery packet is evaluated against a signed rubric, with settlement controls designed for production escrow.**
 
 ## What makes it special
 
@@ -18,7 +18,7 @@ Most agentic commerce demos stop at a marketplace, a wallet, or a prediction. Pr
 
 ## Why it is practical
 
-The initial customer is a small team that delegates research, design, QA, or data operations to agents and already loses time debating whether a handoff is “good enough.” Proofloom gives them a reusable agreement template and an evidence-backed decision log. The same packet format can support freelance delivery, API SLAs, automated bug bounties, grants, and agent-to-agent workflow handoffs.
+The initial customer is a small team that delegates research, design, QA, or data operations to agents and already loses time debating whether a handoff is “good enough.” Proofloom gives them a reusable agreement template and an evidence-backed decision log. The same packet format can support freelance delivery, API SLAs, automated bug bounties, grants, and agent-to-agent workflow handoffs. The current build is a testnet prototype: its contract records adjudication state but does not custody or transfer funds.
 
 ## Track fit
 
@@ -31,7 +31,7 @@ Primary: Agentic Commerce Infrastructure. Secondary: Onchain Justice.
 - Local simulation of a 5-validator resolution state transition.
 - Schema-validated GenLayer Intelligent Contract using non-comparative equivalence-based validation, deployed on Studionet at [`0x603982018aDee45d123bc7a4B157120d106aA867`](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867).
 - A successful full-consensus adjudication simulation against a committed climate-brief rubric and hashed evidence packet.
-- README with architecture, threat model notes, and source links.
+- README with architecture, threat-model notes, source links, and an explicit production-gap disclosure.
 
 ## Next milestone after the tank
 
