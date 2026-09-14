@@ -15,6 +15,8 @@ const cases = [
 const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
 
 function getWalletProvider() {
+  if (window.rabby?.request) return window.rabby;
+  if (window.Rabby?.request) return window.Rabby;
   const injected = window.ethereum;
   const providers = injected?.providers?.length ? injected.providers : injected ? [injected] : [];
   // Rabby may also expose isMetaMask for compatibility. Prefer its explicit
@@ -115,7 +117,10 @@ async function loadClient() {
   const sdk = await import(SDK_URL);
   const { studionet } = await import(CHAINS_URL);
   state.sdk = sdk;
-  state.client = sdk.createClient({ chain: studionet, account: { address: state.wallet, type: 'json-rpc' }, provider: walletProvider });
+  // GenLayerJS v1 forwards wallet RPC methods only when account is an address
+  // string. Passing an account object makes eth_sendTransaction go to the
+  // GenLayer RPC instead of the browser wallet.
+  state.client = sdk.createClient({ chain: studionet, account: state.wallet, provider: walletProvider });
   await state.client.connect('studionet');
   state.chainReady = true;
   return state.client;
@@ -159,7 +164,7 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n });
+    const txId = await client.writeContract({ ...write, account: state.wallet, value: 0n });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
