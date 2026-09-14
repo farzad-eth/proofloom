@@ -16,7 +16,11 @@ The hard part of agent commerce is not sending a payment. It is agreeing on whet
 
 ## Demo
 
-The UI is a judgeable local simulation of the operator experience. Open the Decision Desk, inspect the evidence packet and rubric, use **Request revision** to enter the appeal window, use **Resubmit corrected packet** to reach `ACCEPT`, or use **Run adjudication** to replay the 5-validator resolution. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studionet network, address, and public methods. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`. The demo is explicitly local simulation; no funds move.
+The UI includes both a fast local simulation and a real browser-wallet testnet path. Open the Decision Desk, inspect the evidence packet and rubric, use **Run simulation** for the instant reviewer walkthrough, or connect a wallet and use **Adjudicate on testnet** / **Open on-chain appeal** to submit a real GenLayer Studionet transaction. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studionet network, address, and public methods. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`.
+
+### Wallet and testnet flow
+
+Click **Connect wallet** in the top bar. Proofloom requests the browser wallet account, switches to or adds GenLayer Studionet (`chainId 61999`), reads the deployed contract status, estimates the current GenLayer fee policy, and submits the selected write through GenLayerJS. The wallet must hold test GEN for consensus fees. After submission, the UI keeps the transaction hash visible and waits for the GenLayer decision before refreshing `get_status`.
 
 ## Tracks
 
