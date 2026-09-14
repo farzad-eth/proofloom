@@ -147,18 +147,26 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    let txId;
-    try {
-      const estimate = await client.estimateTransactionFeesForWrite(write);
-      txId = await client.writeContract({ ...write, value: 0n, fees: { distribution: estimate.distribution, feeValue: estimate.feeValue } });
-    } catch (feeError) {
-      const feeMessage = String(feeError?.message || feeError || '');
-      if (!/sim_getFeeConfig|sim_estimateTransactionFees|method .*not found|not available/i.test(feeMessage)) throw feeError;
-      // Older Studionet RPC deployments do not expose fee simulation. Their
-      // Studio-compatible write endpoint accepts the call without a fee profile.
-      state.toast = 'Studionet fee simulation unavailable; submitting via compatibility mode…'; render();
-      txId = await client.writeContract({ ...write, value: 0n });
-    }
+    // This hosted Studionet deployment does not expose the fee-simulation RPCs.
+    // Use a measured Studio-compatible profile instead of falling back to a
+    // plain wallet send, which would target the protocol manager rather than
+    // create a Proofloom contract call.
+    const fees = {
+      distribution: {
+        leaderTimeunitsAllocation: 125n,
+        validatorTimeunitsAllocation: 250n,
+        appealRounds: 1n,
+        executionBudgetPerRound: 786500n,
+        executionConsumed: 0n,
+        totalMessageFees: 0n,
+        rotations: [1n, 1n],
+        maxPriceGenPerTimeUnit: 0n,
+        storageFeeMaxGasPrice: 0n,
+        receiptFeeMaxGasPrice: 0n,
+      },
+      feeValue: 1n * 10n ** 18n,
+    };
+    const txId = await client.writeContract({ ...write, value: 0n, fees });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
