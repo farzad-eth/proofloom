@@ -73,7 +73,7 @@ The public Decision Desk loads the Climate brief packet with its evidence trail,
 ## Final reviewer note
 
 ```text
-Proofloom is intentionally presented as a testnet adjudication prototype rather than a production escrow. Its GenLayer-specific contribution is the use of an Intelligent Contract and non-comparative Equivalence Principle to turn natural-language delivery requirements and evidence into a normalized, inspectable decision state. The UI is a local operator-console demonstration; the deployed contract is publicly inspectable and was schema-validated and exercised on Studionet. Real token custody, caller authorization, deadline enforcement, hash verification, appeal bonds, and production settlement are not claimed and require a separate security-reviewed implementation.
+Proofloom is intentionally presented as a testnet adjudication prototype rather than a production escrow. Its GenLayer-specific contribution is the use of an Intelligent Contract and non-comparative Equivalence Principle to turn natural-language delivery requirements and evidence into a normalized, inspectable decision state. The UI combines an instant local operator-console walkthrough with a live wallet-connected Studionet write path; the deployed contract is publicly inspectable and was schema-validated and exercised on Studionet. Real token custody, caller authorization, deadline enforcement, hash verification, appeal bonds, and production settlement are not claimed and require a separate security-reviewed implementation.
 ```
 
 ## Accuracy checklist before submitting
