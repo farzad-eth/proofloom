@@ -1,6 +1,7 @@
-// v2 RC contains the fee-funded browser-wallet APIs required by current Studionet.
-const SDK_URL = 'https://esm.sh/genlayer-js@2.0.0-rc.1?bundle';
-const CHAINS_URL = 'https://esm.sh/genlayer-js@2.0.0-rc.1/chains?bundle';
+// Studionet's current hosted RPC is compatible with the legacy SDK's
+// protocol-call encoder; the v2 fee estimator expects unavailable RPC methods.
+const SDK_URL = 'https://esm.sh/genlayer-js@1.1.8?bundle';
+const CHAINS_URL = 'https://esm.sh/genlayer-js@1.1.8/chains?bundle';
 const STUDIONET_CHAIN_ID = '0xf22f';
 const CONTRACT = '0x297E74d8eF267612b2635EbDd8033FC1786E7B90';
 const CONTRACT_URL = `https://explorer-studio.genlayer.com/address/${CONTRACT}`;
@@ -104,7 +105,7 @@ async function loadClient() {
   const sdk = await import(SDK_URL);
   const { studionet } = await import(CHAINS_URL);
   state.sdk = sdk;
-  state.client = sdk.createClient({ chain: studionet, account: state.wallet, provider: window.ethereum });
+  state.client = sdk.createClient({ chain: studionet, account: { address: state.wallet, type: 'json-rpc' }, provider: window.ethereum });
   await state.client.connect('studionet');
   state.chainReady = true;
   return state.client;
@@ -147,26 +148,7 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    // This hosted Studionet deployment does not expose the fee-simulation RPCs.
-    // Use a measured Studio-compatible profile instead of falling back to a
-    // plain wallet send, which would target the protocol manager rather than
-    // create a Proofloom contract call.
-    const fees = {
-      distribution: {
-        leaderTimeunitsAllocation: 125n,
-        validatorTimeunitsAllocation: 250n,
-        appealRounds: 1n,
-        executionBudgetPerRound: 786500n,
-        executionConsumed: 0n,
-        totalMessageFees: 0n,
-        rotations: [1n, 1n],
-        maxPriceGenPerTimeUnit: 0n,
-        storageFeeMaxGasPrice: 0n,
-        receiptFeeMaxGasPrice: 0n,
-      },
-      feeValue: 1n * 10n ** 18n,
-    };
-    const txId = await client.writeContract({ ...write, value: 0n, fees });
+    const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
