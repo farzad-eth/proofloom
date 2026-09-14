@@ -14,6 +14,12 @@ const cases = [
 
 const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
 
+function getWalletProvider() {
+  const injected = window.ethereum;
+  const providers = injected?.providers?.length ? injected.providers : injected ? [injected] : [];
+  return providers.find((provider) => provider.isMetaMask || provider.isRabby || provider.isBraveWallet) || providers[0] || null;
+}
+
 const icon = (name, size = 18) => {
   const paths = {
     check: '<path d="m5 12 4 4L19 6"/>',
@@ -102,22 +108,25 @@ function revise() {
 function appeal() { state.phase = 'APPEAL WINDOW'; state.decision = state.decision === 'PENDING' ? 'REVISE' : state.decision; state.confidence = 72; state.toast = 'Appeal opened · packet held for second review'; render(); setTimeout(() => { state.toast = ''; render(); }, 4200); }
 async function loadClient() {
   if (state.client) return state.client;
+  const walletProvider = getWalletProvider();
+  if (!walletProvider) throw new Error('No EIP-1193 wallet provider detected');
   const sdk = await import(SDK_URL);
   const { studionet } = await import(CHAINS_URL);
   state.sdk = sdk;
-  state.client = sdk.createClient({ chain: studionet, account: { address: state.wallet, type: 'json-rpc' }, provider: window.ethereum });
+  state.client = sdk.createClient({ chain: studionet, account: { address: state.wallet, type: 'json-rpc' }, provider: walletProvider });
   await state.client.connect('studionet');
   state.chainReady = true;
   return state.client;
 }
 
 async function connectWallet() {
-  if (!window.ethereum) { state.toast = 'Install a wallet such as MetaMask to use Studionet'; render(); return; }
+  const walletProvider = getWalletProvider();
+  if (!walletProvider) { state.toast = 'Install a wallet such as MetaMask to use Studionet'; render(); return; }
   try {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await walletProvider.request({ method: 'eth_requestAccounts' });
     state.wallet = accounts[0];
-    try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID }] }); } catch (switchError) {
-      if (switchError?.code === 4902) await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID, chainName: 'GenLayer Studionet', nativeCurrency: { name: 'GEN Token', symbol: 'GEN', decimals: 18 }, rpcUrls: ['https://studio.genlayer.com/api'], blockExplorerUrls: ['https://explorer-studio.genlayer.com'] }] });
+    try { await walletProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID }] }); } catch (switchError) {
+      if (switchError?.code === 4902) await walletProvider.request({ method: 'wallet_addEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID, chainName: 'GenLayer Studionet', nativeCurrency: { name: 'GEN Token', symbol: 'GEN', decimals: 18 }, rpcUrls: ['https://studio.genlayer.com/api'], blockExplorerUrls: ['https://explorer-studio.genlayer.com'] }] });
       else throw switchError;
     }
     await loadClient();
