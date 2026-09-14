@@ -164,7 +164,10 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    const txId = await client.writeContract({ ...write, account: state.wallet, value: 0n });
+    // The client was initialized with the wallet address string. Do not pass
+    // that string again here: GenLayerJS v1 expects its normalized internal
+    // account object on write calls and otherwise reads address as undefined.
+    const txId = await client.writeContract({ ...write, value: 0n });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
