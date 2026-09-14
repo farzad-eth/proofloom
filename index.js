@@ -1,7 +1,7 @@
 const SDK_URL = 'https://esm.sh/genlayer-js@1.1.8?bundle';
 const CHAINS_URL = 'https://esm.sh/genlayer-js@1.1.8/chains?bundle';
 const STUDIONET_CHAIN_ID = '0xf22f';
-const CONTRACT = '0x603982018aDee45d123bc7a4B157120d106aA867';
+const CONTRACT = '0x297E74d8eF267612b2635EbDd8033FC1786E7B90';
 const CONTRACT_URL = `https://explorer-studio.genlayer.com/address/${CONTRACT}`;
 
 const cases = [
@@ -10,7 +10,7 @@ const cases = [
   { id: 'PL-039', title: 'Vendor shortlist · robotics', agent: 'scout-7b', status: 'RESOLVED', tone: 'resolved', amount: '95 USDC demo value', confidence: 94, updated: 'Yesterday', source: 'Notion packet + 12 URLs' },
 ];
 
-const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, chainReady: false, txHash: '', onchainStatus: '' };
+const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
 
 const icon = (name, size = 18) => {
   const paths = {
@@ -33,10 +33,10 @@ function render() {
   const revised = state.decision === 'REVISE';
   document.querySelector('#root').innerHTML = `
     <div class="app-shell">
-      <header class="topbar">
-        <a class="brand" href="#top" aria-label="Proofloom home"><img src="/proofloom-logo.png" alt="" /><span>proofloom</span><em>evidence layer</em></a>
-        <nav class="topnav" aria-label="Primary"><a class="nav-active" href="#desk">Decision desk</a><a href="#contract">Contract console</a><a href="#how">How it works</a></nav>
-        <div class="network-chip"><span class="pulse"></span> Studionet <small>5 validators</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="connect">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x6039…A867</code>${icon('external',12)}</a>
+        <header class="topbar">
+          <a class="brand" href="#top" aria-label="Proofloom home"><img src="/proofloom-logo.png" alt="" /><span>proofloom</span><em>evidence layer</em></a>
+          <nav class="topnav" aria-label="Primary"><a class="nav-active" href="#desk">Decision desk</a><a href="#contract">Contract console</a><a href="#how">How it works</a></nav>
+          <div class="network-chip"><span class="pulse"></span> Studionet <small>5 validators</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="connect">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x297E…7B90</code>${icon('external',12)}</a>
       </header>
 
       <main id="top">
@@ -51,7 +51,7 @@ function render() {
             </div>
             <div class="hero-proof">
               <div class="proof-orbit orbit-a"></div><div class="proof-orbit orbit-b"></div>
-              <div class="proof-card"><div class="proof-card-top"><span class="status-label">${resolved ? 'CONSENSUS COMPLETE' : 'CONSENSUS READY'}</span><span class="mono">5/5 validators</span></div><div class="proof-mark">${icon(resolved ? 'check' : 'shield', 42)}</div><div class="proof-card-title">${resolved ? 'ACCEPT' : revised ? 'REVISE' : 'PENDING'}</div><div class="proof-card-sub">${resolved ? 'Evidence satisfies the committed rubric' : revised ? 'Add the missing evidence, then resubmit' : 'Rubric + packet are ready for review'}</div><div class="proof-card-foot"><span>Equivalence Principle</span><span class="mono">v0.2.16</span></div></div>
+              <div class="proof-card"><div class="proof-card-top"><span class="status-label">${resolved ? 'CONSENSUS COMPLETE' : 'CONSENSUS READY'}</span><span class="mono">5/5 validators</span></div><div class="proof-mark">${icon(resolved ? 'check' : 'shield', 42)}</div><div class="proof-card-title">${resolved ? 'ACCEPT' : revised ? 'REVISE' : 'PENDING'}</div><div class="proof-card-sub">${resolved ? 'Evidence satisfies the committed rubric' : revised ? 'Add the missing evidence, then resubmit' : 'Rubric + packet are ready for review'}</div><div class="proof-card-foot"><span>Equivalence Principle</span><span class="mono">v0.3.0</span></div></div>
             </div>
           </div>
         </section>
@@ -66,13 +66,13 @@ function render() {
                 <div class="evidence-panel"><div class="panel-label">EVIDENCE TRAIL <span>03 ATTACHED</span></div><div class="evidence-item"><span class="evidence-icon mint">${icon('link',16)}</span><div><strong>atlas-researcher / climate-brief</strong><small>GITHUB · commit 7fe2c1 · 8 sources cited</small></div><span class="verified">${icon('check',14)}</span></div><div class="evidence-item"><span class="evidence-icon amber">${icon('eye',16)}</span><div><strong>european-environment-agency.eu</strong><small>WEB · retrieved by 5 validators</small></div><span class="verified">${icon('check',14)}</span></div><div class="evidence-item"><span class="evidence-icon violet">${icon('shield',16)}</span><div><strong>Acceptance criteria v1.4</strong><small>RUBRIC · 3 required checks · hash pinned</small></div><span class="verified">${icon('check',14)}</span></div><div class="hash-row"><span>RUBRIC HASH</span><code>sha256: 8f1…d29</code><span class="hash-ok">PINNED</span></div></div>
                 <div class="rubric-panel"><div class="panel-label">COMMITTED RUBRIC <a href="#contract">inspect seam ${icon('arrow',13)}</a></div><h4>Climate brief · Europe Q3</h4><ul><li class="done">8+ primary sources</li><li class="done">Claims traceable to evidence</li><li class="done">Under 2,000 words</li><li class="${revised ? 'missing' : 'done'}">State confidence and limitations</li></ul><div class="confidence"><div><span>VALIDATOR CONFIDENCE</span><strong>${state.confidence}%</strong></div><div class="confidence-bar"><span style="width:${state.confidence}%"></span></div><small>Independent validators evaluate semantic equivalence, not identical prose.</small></div></div>
               </div>
-              <div class="reputation-event ${revised ? 'held' : resolved ? 'earned' : ''}"><div class="reputation-event-mark">${icon(resolved ? 'check' : revised ? 'rotate' : 'shield',18)}</div><div class="reputation-event-copy"><div class="panel-label">REPUTATION EVENT <span>${resolved ? 'ELIGIBLE' : revised ? 'HELD' : 'PENDING'}</span></div><strong>${resolved ? 'ACCEPT · climate brief / Europe Q3' : revised ? 'REVISE · evidence gap identified' : 'PENDING · awaiting adjudication'}</strong><small>${resolved ? 'Evidence-backed completion event for a future portable agent history.' : revised ? 'No positive reputation event is recorded until the corrected packet is accepted.' : 'A credit event is created only after the committed rubric is adjudicated.'}</small></div><div class="reputation-event-tag">AGENT CREDIT<br />SCORE INPUT</div></div>
+              <div class="reputation-event ${revised ? 'held' : resolved ? 'earned' : ''}"><div class="reputation-event-mark">${icon(resolved ? 'check' : revised ? 'rotate' : 'shield',18)}</div><div class="reputation-event-copy"><div class="panel-label">REPUTATION EVENT <span>${resolved ? 'ELIGIBLE' : revised ? 'HELD' : 'PENDING'}</span></div><strong>${resolved ? 'ACCEPT · climate brief / Europe Q3' : revised ? 'REVISE · evidence gap identified' : 'PENDING · awaiting adjudication'}</strong><small>${resolved ? 'Evidence-backed completion event for a future portable agent history.' : revised ? 'No positive reputation event is recorded until the corrected packet is accepted.' : 'A credit event is created only after the committed rubric is adjudicated.'}</small>${state.reputation ? `<small class="mono">ON-CHAIN PROFILE · ${state.reputation}</small>` : ''}</div><div class="reputation-event-tag">AGENT CREDIT<br />SCORE INPUT</div></div>
               <div class="detail-actions"><button class="button primary" data-action="run">${icon(resolved ? 'rotate' : 'check',15)} ${resolved ? 'Run another review' : 'Run simulation'}</button><button class="button onchain" data-chain-action="adjudicate">${icon('zap',15)} Submit adjudication</button><button class="button ghost" data-chain-action="appeal">Open on-chain appeal</button><button class="button ghost" data-action="revise">${icon('rotate',15)} ${revised ? 'Resubmit locally' : 'Request revision'}</button></div>
             </article>
           </div>
         </section>
 
-        <section class="contract-band" id="contract"><div class="contract-copy"><p class="section-kicker">GENLAYER ADJUDICATION LAYER</p><h2>The contract seam is the product.</h2><p>Proofloom uses a Python Intelligent Contract and GenLayer's non-comparative Equivalence Principle to turn a rubric plus evidence packet into a normalized state transition.</p><div class="contract-meta"><div><span>NETWORK</span><strong><i class="pulse"></i> GenLayer Studionet</strong></div><div><span>ADDRESS</span><button class="address-copy" data-copy="${CONTRACT}" title="Copy contract address"><code>${CONTRACT.slice(0,10)}…${CONTRACT.slice(-8)}</code>${icon('link',13)}</button></div><div><span>PUBLIC METHODS</span><strong>adjudicate · open_appeal · get_status</strong></div></div><a class="text-link" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">Inspect deployed Studionet contract ${icon('external',14)}</a></div><div class="contract-terminal"><div class="terminal-top"><span></span><span></span><span></span><label>proofloom_escrow.py</label></div><pre><span class="muted">@gl.public.write</span>
+        <section class="contract-band" id="contract"><div class="contract-copy"><p class="section-kicker">GENLAYER ADJUDICATION LAYER</p><h2>The contract seam is the product.</h2><p>Proofloom uses a Python Intelligent Contract and GenLayer's non-comparative Equivalence Principle to turn a rubric plus evidence packet into a normalized state transition and append-only reputation event.</p><div class="contract-meta"><div><span>NETWORK</span><strong><i class="pulse"></i> GenLayer Studionet</strong></div><div><span>ADDRESS</span><button class="address-copy" data-copy="${CONTRACT}" title="Copy contract address"><code>${CONTRACT.slice(0,10)}…${CONTRACT.slice(-8)}</code>${icon('link',13)}</button></div><div><span>PUBLIC METHODS</span><strong>adjudicate · get_reputation · get_history</strong></div></div><a class="text-link" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">Inspect deployed Studionet contract ${icon('external',14)}</a></div><div class="contract-terminal"><div class="terminal-top"><span></span><span></span><span></span><label>proofloom_escrow.py</label></div><pre><span class="muted">@gl.public.write</span>
 <span class="blue">def</span> adjudicate(packet, packet_hash):
   consensus = gl.eq_principle
     .prompt_non_comparative(
@@ -119,11 +119,18 @@ async function connectWallet() {
       else throw switchError;
     }
     await loadClient();
-    const status = await state.client.readContract({ address: CONTRACT, functionName: 'get_status', args: [], jsonSafeReturn: true });
-    state.onchainStatus = String(status);
+    await refreshOnchainProfile();
     state.toast = 'Wallet connected to GenLayer Studionet';
   } catch (error) { state.toast = `Wallet connection failed: ${error?.shortMessage || error?.message || 'user rejected'}`; }
   render(); setTimeout(() => { state.toast = ''; render(); }, 5000);
+}
+
+async function refreshOnchainProfile() {
+  if (!state.client) return;
+  const status = await state.client.readContract({ address: CONTRACT, functionName: 'get_status', args: [], jsonSafeReturn: true });
+  const profile = await state.client.readContract({ address: CONTRACT, functionName: 'get_reputation', args: [], jsonSafeReturn: true });
+  state.onchainStatus = String(status);
+  state.reputation = String(profile);
 }
 
 async function submitOnchain(kind) {
@@ -141,7 +148,7 @@ async function submitOnchain(kind) {
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
     if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.txExecutionResultName || 'execution failed'}`);
-    state.onchainStatus = String(await client.readContract({ address: CONTRACT, functionName: 'get_status', args: [], jsonSafeReturn: true }));
+    await refreshOnchainProfile();
     state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : 'On-chain adjudication reached consensus'; render();
   } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studionet network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
   setTimeout(() => { state.toast = ''; render(); }, 7000);

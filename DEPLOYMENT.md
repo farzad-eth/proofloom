@@ -1,8 +1,8 @@
 # Proofloom Deployment Verification
 
-**Status:** Verified on GenLayer Studionet  
-**Contract address:** [`0x603982018aDee45d123bc7a4B157120d106aA867`](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867)  
-**Network:** GenLayer Studionet  
+**Status:** Verified on GenLayer Studionet
+**Contract address:** [`0x297E74d8eF267612b2635EbDd8033FC1786E7B90`](https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90)
+**Network:** GenLayer Studionet
 **Verification date:** 2026-09-14
 
 ## Conclusion
@@ -26,7 +26,7 @@ Proofloom now has a deployed, publicly inspectable **Intelligent Contract** on G
 
 The contract is written in Python for the current Studio runtime. The persisted `confidence` field uses `u16` rather than Python `int`, because persisted GenLayer fields must use a fixed-size integer type or `bigint`. The constructor takes a rubric and a SHA-256 commitment. `adjudicate` supplies the rubric and packet as data to `prompt_non_comparative`, accepts only `ACCEPT`, `REVISE`, or `REJECT`, and writes state only after consensus returns. `open_appeal` holds settlement and reopens a recorded decision for another review.
 
-GenLayer requires LLM-backed or otherwise variable operations to execute within an approved non-deterministic consensus pattern, while persistent state updates occur only after consensus. Proofloom follows this separation. The current implementation also treats rubric and evidence text as untrusted input in its adjudication criteria.
+GenLayer requires LLM-backed or otherwise variable operations to execute within an approved non-deterministic consensus pattern, while persistent state updates occur only after consensus. Proofloom follows this separation. [1] The current implementation also treats rubric and evidence text as untrusted input in its adjudication criteria.
 
 ## Security posture and next production step
 
@@ -46,3 +46,11 @@ The deployment deliberately excludes token custody. The primary remaining contro
 [2]: https://docs.genlayer.com/developers/intelligent-contracts/storage "GenLayer Documentation: Persisting data on the blockchain"
 [3]: https://docs.genlayer.com/developers/intelligent-contracts/tools/genlayer-studio/deploying-contract "GenLayer Documentation: Deploy Contracts"
 [4]: https://docs.genlayer.com/developers/networks "GenLayer Documentation: Networks"
+
+## v0.3.0 reputation upgrade
+
+The contract at the address above is the reputation-aware v0.3.0 instance. Its constructor initializes an agent profile at `atlas-researcher` with a baseline score of `500`. The contract adds persistent `reputation_score`, accepted/revise/rejected counters, and append-only `reputation_history` storage, plus the read methods `get_reputation`, `get_history`, and `get_agent_profile`.
+
+A full-consensus adjudication was exercised in GenLayer Studio on 2026-09-14 with a passing Europe Q3 climate packet. The adjudication transaction reached `ACCEPTED` and then `FINALIZED`; the resulting state update appends an ACCEPT reputation event and increases the score by 10 points. The deployment transaction was `0x6d74fc7c5077098d955fac645981e5edc884aa5fa7367bc7afdb7aefbee0646b`, and the adjudication transaction was `0x4c3a6c42f578e00c1046410d2321e7eb45b2c058878683b6bf274ce2d556b505`.
+
+This remains a testnet prototype. The score is an explicit, transparent aggregation primitive—not a claim of production identity reputation. Caller authorization, hash verification, deadlines, appeal bonds, and multi-agreement aggregation remain required before valuable assets or formal credit decisions are supported.

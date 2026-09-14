@@ -2,7 +2,7 @@
 
 **Proof-carrying work for the agentic economy.**
 
-Proofloom is the evidence and adjudication layer beneath an on-chain Agent Credit Score. Instead of treating a payment or opaque model response as proof of reliability, an agent submits a delivery packet: a committed acceptance rubric, cited evidence, and a reproducible artifact. GenLayer consensus turns the packet into an inspectable `ACCEPT`, `REVISE`, or `REJECT` reputation event. A future reputation contract can aggregate finalized events into a portable agent history and credit score.
+Proofloom is the evidence and adjudication layer beneath an on-chain Agent Credit Score. Instead of treating a payment or opaque model response as proof of reliability, an agent submits a delivery packet: a committed acceptance rubric, cited evidence, and a reproducible artifact. GenLayer consensus turns the packet into an inspectable `ACCEPT`, `REVISE`, or `REJECT` reputation event, and the v0.3.0 contract persists a transparent score, outcome counters, and append-only history.
 
 ## Why this belongs on GenLayer
 
@@ -16,9 +16,9 @@ The hard part of agent commerce is not sending a payment. It is agreeing on whet
 
 ## Demo
 
-The UI includes both a fast local simulation and a real browser-wallet testnet path. Open the Decision Desk, inspect the evidence packet and rubric, use **Run simulation** for the instant reviewer walkthrough, or connect a wallet and use **Adjudicate on testnet** / **Open on-chain appeal** to submit a real GenLayer Studionet transaction. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studionet network, address, and public methods. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`.
+The UI includes both a fast local simulation and a real browser-wallet testnet path. Open the Decision Desk, inspect the evidence packet and rubric, use **Run simulation** for the instant reviewer walkthrough, or connect a wallet and use **Adjudicate on testnet** / **Open on-chain appeal** to submit a real GenLayer Studionet transaction. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studionet network, address, and public methods. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90) at `0x297E74d8eF267612b2635EbDd8033FC1786E7B90`.
 
-The Decision Desk also surfaces a **Reputation Event**. An accepted packet is marked eligible as a future Agent Credit Score input; pending, revised, or appealed packets are not treated as positive history. The current prototype does not yet aggregate historical scores, attach identity-weighted reputation, or implement a portable credit profile.
+The Decision Desk also surfaces a **Reputation Event**. An accepted packet is marked eligible as an Agent Credit Score input; pending, revised, or appealed packets are not treated as positive history. The current prototype does not implement caller authorization, deadlines, hash-to-artifact verification, appeal bonds, or production funds custody, and its score is intentionally a transparent testnet primitive rather than a production identity claim.
 
 ### Wallet and testnet flow
 
@@ -39,7 +39,7 @@ pnpm dev
 
 ## Contract starter
 
-`proofloom_escrow.py` is a Studio-compatible Python Intelligent Contract that commits a rubric, evaluates an evidence packet with GenLayer's non-comparative Equivalence Principle, normalizes the outcome to `ACCEPT`, `REVISE`, or `REJECT`, and holds the recorded outcome during an appeal. Its schema has been validated against the current Studionet RPC and it has been deployed and exercised through a full-consensus simulation. It deliberately does **not** custody or transfer real tokens, verify that a supplied hash matches its text, enforce deadlines, or authorize callers. Before a production deployment, add those controls, independently audit the contract, and introduce escrow/appeal-bond accounting only after that review.
+`proofloom_escrow.py` is a Studio-compatible Python Intelligent Contract that commits a rubric, evaluates an evidence packet with GenLayer's non-comparative Equivalence Principle, normalizes the outcome to `ACCEPT`, `REVISE`, or `REJECT`, holds the recorded outcome during an appeal, and updates a persistent score plus reputation history after consensus. Its schema has been validated against the current Studionet RPC, deployed at `0x297E74d8eF267612b2635EbDd8033FC1786E7B90`, and exercised through a finalized full-consensus adjudication. It deliberately does **not** custody or transfer real tokens, verify that a supplied hash matches its text, enforce deadlines, or authorize callers. Before production, add those controls, independently audit the contract, and introduce escrow/appeal-bond accounting only after that review.
 
 ## Product principles
 
