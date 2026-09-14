@@ -20,7 +20,7 @@ The UI includes both a fast local simulation and a real browser-wallet testnet p
 
 ### Wallet and testnet flow
 
-Click **Connect wallet** in the top bar. Proofloom requests the browser wallet account, switches to or adds GenLayer Studionet (`chainId 61999`), reads the deployed contract status, estimates the current GenLayer fee policy, and submits the selected write through GenLayerJS. The wallet must hold test GEN for consensus fees. After submission, the UI keeps the transaction hash visible and waits for the GenLayer decision before refreshing `get_status`.
+Click **Connect wallet** in the top bar. Proofloom requests the browser wallet account, switches to or adds GenLayer Studionet (`chainId 61999`), reads the deployed contract status, and submits the selected write through the browser-wallet transport in GenLayerJS. The wallet must hold test GEN for consensus fees and gas. After submission, the UI keeps the transaction hash visible and waits for the GenLayer decision before refreshing `get_status`.
 
 ## Tracks
 

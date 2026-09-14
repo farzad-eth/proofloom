@@ -102,7 +102,7 @@ async function loadClient() {
   const sdk = await import(SDK_URL);
   const { studionet } = await import(CHAINS_URL);
   state.sdk = sdk;
-  state.client = sdk.createClient({ chain: studionet, account: state.wallet, provider: window.ethereum });
+  state.client = sdk.createClient({ chain: studionet, account: { address: state.wallet, type: 'json-rpc' }, provider: window.ethereum });
   await state.client.connect('studionet');
   state.chainReady = true;
   return state.client;
@@ -127,19 +127,21 @@ async function connectWallet() {
 
 async function submitOnchain(kind) {
   if (!state.wallet) { await connectWallet(); if (!state.wallet) return; }
+  const chainState = String(state.onchainStatus || '');
+  if (kind === 'appeal' && chainState.startsWith('PENDING')) { state.toast = 'Appeal requires an adjudicated decision first'; render(); return; }
+  if (kind === 'adjudicate' && chainState && !chainState.startsWith('PENDING') && !chainState.includes(':OPEN')) { state.toast = 'This agreement already has a decision; open a new agreement before adjudicating again'; render(); return; }
   try {
     const client = await loadClient();
     const write = kind === 'appeal' ? { address: CONTRACT, functionName: 'open_appeal', args: ['Reviewer requested a second evidence review.'] } : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : 'Preparing adjudication transaction…'; render();
-    const estimate = await client.estimateTransactionFeesForWrite(write);
-    const txId = await client.writeContract({ ...write, fees: { distribution: estimate.distribution, feeValue: estimate.feeValue } });
+    const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
     if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.txExecutionResultName || 'execution failed'}`);
     state.onchainStatus = String(await client.readContract({ address: CONTRACT, functionName: 'get_status', args: [], jsonSafeReturn: true }));
     state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : 'On-chain adjudication reached consensus'; render();
-  } catch (error) { state.toast = `Testnet write failed: ${error?.shortMessage || error?.message || 'check wallet and GEN balance'}`; render(); }
+  } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studionet network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
   setTimeout(() => { state.toast = ''; render(); }, 7000);
 }
 
