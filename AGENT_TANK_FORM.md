@@ -29,7 +29,7 @@ Proofloom is an evidence-first adjudication layer for agent-to-agent work. A buy
 ### Step 1 — Open the demo
 
 ```text
-Open https://proofloom-one.vercel.app and wait for the Proofloom Decision Desk to load. The page is a responsive reviewer console with an explicit local-simulation disclosure.
+Open https://proofloom-one.vercel.app and wait for the Proofloom Decision Desk to load. The page is a responsive reviewer console with separate local-simulation and live Studionet transaction controls.
 ```
 
 ### Step 2 — Inspect the evidence packet
@@ -47,7 +47,7 @@ Click "View contract" in the demo, then open the linked Studionet contract. Alte
 ### Step 4 — Run the product demonstration
 
 ```text
-Click "Request revision" to demonstrate a missing rubric requirement and the appeal/revision window. Then click "Resubmit corrected packet" to return the packet to ACCEPT. Click "Open appeal" to demonstrate a held second-review state. Finally click "Run adjudication" to replay the 5-validator local simulation. These controls demonstrate the product flow locally; they do not submit on-chain transactions.
+Click "Request revision" to demonstrate a missing rubric requirement and the appeal/revision window. Then click "Resubmit locally" to return the packet to ACCEPT. For the live path, connect a wallet with test GEN, click "Adjudicate on testnet" or "Open on-chain appeal", approve the wallet request, and wait for the GenLayer decision before the UI refreshes the contract status. Finally click "Run simulation" to replay the instant local reviewer walkthrough.
 ```
 
 ### Step 5 — Inspect the implementation
@@ -59,7 +59,7 @@ Open https://github.com/farzad-eth/proofloom and read proofloom_escrow.py. Confi
 ## Expected verification outcome
 
 ```text
-The public Decision Desk loads the Climate brief packet with its evidence trail, rubric requirements, packet metadata, confidence indicator, validator count, and review status. View contract exposes the deployed GenLayer Studionet address. Request revision, resubmit corrected packet, and open appeal demonstrate the local revision and appeal state machine; Run adjudication shows a consensus confirmation without moving funds. The public repository contains proofloom_escrow.py, a Studio-compatible Python Intelligent Contract whose get_status() initial state was verified as PENDING:HELD:NONE:0. Its adjudicate method sends rubric and packet text through gl.eq_principle.prompt_non_comparative, accepts only ACCEPT, REVISE, or REJECT, and records the resulting decision state.
+The public Decision Desk loads the Climate brief packet with its evidence trail, rubric requirements, packet metadata, confidence indicator, validator count, and review status. View contract exposes the deployed GenLayer Studionet address. Request revision and Resubmit locally demonstrate the local revision state; Run simulation shows the instant local reviewer walkthrough. With a wallet funded with test GEN, the live controls submit adjudication or appeal writes, wait for consensus, and refresh get_status without moving or custodying tokens. The public repository contains proofloom_escrow.py, a Studio-compatible Python Intelligent Contract whose get_status() initial state was verified as PENDING:HELD:NONE:0. Its adjudicate method sends rubric and packet text through gl.eq_principle.prompt_non_comparative, accepts only ACCEPT, REVISE, or REJECT, and records the resulting decision state.
 ```
 
 ## Project links
@@ -82,8 +82,8 @@ Proofloom is intentionally presented as a testnet adjudication prototype rather 
 - Select **Agentic Commerce Infrastructure** as the primary track.
 - Paste the website, repository, and contract links exactly as shown above.
 - Keep the local-simulation disclosure in both the overview and verification outcome.
-- Do not describe the UI as a live transaction client.
-- Do not claim that Proofloom has transferred or released real funds.
+- Describe the UI as a live Studionet transaction client for adjudication and appeal writes, while distinguishing the local simulation controls.
+- Do not claim that Proofloom has transferred or released real funds; the contract records adjudication state only and does not custody tokens.
 - Connect the wallet associated with the hackathon entry.
 - Review the complete form before pressing the final public submission button.
 
@@ -97,4 +97,4 @@ Proofloom is intentionally presented as a testnet adjudication prototype rather 
 [6]: https://proofloom-one.vercel.app "Proofloom public demo"
 [7]: https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867 "Proofloom Studionet contract"
 
-The contract's use of declared persistent fields, a fixed-size `u16` confidence value, and `prompt_non_comparative` is consistent with the cited GenLayer guidance [1] [2]. The current demo does not perform the browser-wallet write flow described in the transaction guidance [3] [4].
+The contract's use of declared persistent fields, a fixed-size `u16` confidence value, and `prompt_non_comparative` is consistent with the cited GenLayer guidance [1] [2]. The current demo implements the browser-wallet write flow described in the transaction guidance [3] [4], including fee estimation, decision tracking, and post-consensus status refresh; it does not custody or transfer tokens.

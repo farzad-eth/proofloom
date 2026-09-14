@@ -134,7 +134,8 @@ async function submitOnchain(kind) {
     const client = await loadClient();
     const write = kind === 'appeal' ? { address: CONTRACT, functionName: 'open_appeal', args: ['Reviewer requested a second evidence review.'] } : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : 'Preparing adjudication transaction…'; render();
-    const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n });
+    const estimate = await client.estimateTransactionFeesForWrite(write);
+    const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n, fees: { distribution: estimate.distribution, feeValue: estimate.feeValue } });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });

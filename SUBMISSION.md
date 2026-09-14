@@ -14,8 +14,8 @@ Most agentic commerce demos stop at a marketplace, a wallet, or a prediction. Pr
 2. Inspect the evidence trail, attached rubric, confidence, and validator count.
 3. Open **View contract** to inspect the deployed [Studionet contract](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) and the contract seam shown on the page.
 4. Click **Request revision** to see a missing requirement move the packet into the appeal/revision window.
-5. Click **Resubmit corrected packet** to see the state return to ACCEPT, or click **Open appeal** to hold the case for second review.
-6. Click **Run adjudication** to replay the local 5-validator demonstration and inspect the consensus toast.
+5. Click **Resubmit locally** to see the state return to ACCEPT, or click **Open on-chain appeal** after connecting a wallet to hold the deployed contract state for second review.
+6. Click **Run simulation** to replay the instant local reviewer demonstration. For the live path, connect a wallet funded with test GEN, click **Adjudicate on testnet**, approve the wallet request, and wait for the Studionet decision and refreshed contract status.
 
 ## Why it is practical
 
@@ -29,11 +29,11 @@ Primary: Agentic Commerce Infrastructure. Secondary: Onchain Justice.
 
 - Responsive operator console with real interaction states.
 - Evidence trail, rubric hash, packet status, confidence bar, escrow metric, and network health surfaces.
-- Local simulation of a 5-validator resolution, revision, resubmission, and appeal state transition.
+- Local simulation of a 5-validator-style resolution, revision, resubmission, and appeal state transition, plus a live browser-wallet path for Studionet adjudication and appeal writes.
 - Schema-validated GenLayer Intelligent Contract using non-comparative equivalence-based validation, deployed on Studionet at [`0x603982018aDee45d123bc7a4B157120d106aA867`](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867).
 - A successful full-consensus adjudication simulation against a committed climate-brief rubric and hashed evidence packet.
 - README with architecture, threat-model notes, source links, and an explicit production-gap disclosure.
 
 ## Next milestone after the tank
 
-Add a browser-wallet write path only after the contract is hardened; then introduce caller authorization, hash-to-content verification, deadline rules, appeal-bond accounting, and signed validator receipts alongside the resolved artifact. Until then, the public product is intentionally an adjudication prototype, not a live escrow client.
+Before production, introduce caller authorization, hash-to-content verification, deadline rules, appeal-bond accounting, and signed validator receipts alongside the resolved artifact. The current public product is a live testnet adjudication client and intentionally not a production escrow client.
