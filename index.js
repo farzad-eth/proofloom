@@ -3,7 +3,7 @@
 const SDK_URL = 'https://esm.sh/genlayer-js@1.1.8?bundle';
 const CHAINS_URL = 'https://esm.sh/genlayer-js@1.1.8/chains?bundle';
 const STUDIONET_CHAIN_ID = '0xf22f';
-const CONTRACT = '0x297E74d8eF267612b2635EbDd8033FC1786E7B90';
+const CONTRACT = '0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181';
 const CONTRACT_URL = `https://explorer-studio.genlayer.com/address/${CONTRACT}`;
 
 const cases = [

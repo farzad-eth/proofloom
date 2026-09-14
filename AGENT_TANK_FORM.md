@@ -10,7 +10,7 @@ This sheet contains copy-ready content for the Agent Tank form. It uses only cla
 | Project name | Proofloom |
 | Logo | Upload `proofloom-logo.png` from the repository root. |
 | Demo video | Leave blank unless a public video is available. |
-| Contract link | https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90 |
+| Contract link | https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181 |
 
 ## Project summary
 
@@ -41,7 +41,7 @@ Select "Climate brief · Europe Q3". Inspect the evidence trail, cited sources, 
 ### Step 3 — Inspect the GenLayer contract
 
 ```text
-Click "View contract" in the demo, then open the linked Studionet contract. Alternatively, open the contract link in the public repository README: https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90
+Click "View contract" in the demo, then open the linked Studionet contract. Alternatively, open the contract link in the public repository README: https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181
 ```
 
 ### Step 4 — Run the product demonstration
@@ -68,7 +68,7 @@ The public Decision Desk loads the Climate brief packet with its evidence trail,
 |---|---|
 | Website | https://proofloom-one.vercel.app |
 | GitHub repository | https://github.com/farzad-eth/proofloom |
-| Contract link | https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90 |
+| Contract link | https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181 |
 
 ## Final reviewer note
 
@@ -95,6 +95,6 @@ Proofloom is intentionally presented as a testnet adjudication prototype rather 
 [4]: https://docs.genlayer.com/api-references/genlayer-js/contracts "GenLayerJS contract interaction reference"
 [5]: https://github.com/farzad-eth/proofloom "Proofloom public repository"
 [6]: https://proofloom-one.vercel.app "Proofloom public demo"
-[7]: https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90 "Proofloom Studionet contract"
+[7]: https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181 "Proofloom Studionet contract"
 
 The contract's use of declared persistent fields, a fixed-size `u16` confidence value, and `prompt_non_comparative` is consistent with the cited GenLayer guidance [1] [2]. The current demo implements the browser-wallet write flow described in the transaction guidance [3] [4], including fee estimation, decision tracking, and post-consensus status refresh; it does not custody or transfer tokens.

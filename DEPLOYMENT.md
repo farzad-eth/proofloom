@@ -1,7 +1,7 @@
 # Proofloom Deployment Verification
 
 **Status:** Verified on GenLayer Studionet
-**Contract address:** [`0x297E74d8eF267612b2635EbDd8033FC1786E7B90`](https://explorer-studio.genlayer.com/address/0x297E74d8eF267612b2635EbDd8033FC1786E7B90)
+**Contract address:** [`0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`](https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181)
 **Network:** GenLayer Studionet
 **Verification date:** 2026-09-14
 

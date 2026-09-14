@@ -72,7 +72,7 @@ class ProofloomEscrow(gl.Contract):
 
         evidence = "RUBRIC:\n" + self.rubric + "\n\nPACKET:\n" + packet
         consensus = gl.eq_principle.prompt_non_comparative(
-            input=evidence,
+            evidence,
             task="Evaluate the packet against its rubric and return ACCEPT, REVISE, or REJECT.",
             criteria=(
                 "Return exactly one token: ACCEPT, REVISE, or REJECT. ACCEPT only "
