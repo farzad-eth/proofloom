@@ -17,7 +17,9 @@ const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toas
 function getWalletProvider() {
   const injected = window.ethereum;
   const providers = injected?.providers?.length ? injected.providers : injected ? [injected] : [];
-  return providers.find((provider) => provider.isMetaMask || provider.isRabby || provider.isBraveWallet) || providers[0] || null;
+  // Rabby may also expose isMetaMask for compatibility. Prefer its explicit
+  // marker first so a read-only GenLayer Snap is not selected accidentally.
+  return providers.find((provider) => provider.isRabby) || providers.find((provider) => provider.isBraveWallet) || providers.find((provider) => provider.isMetaMask) || providers[0] || null;
 }
 
 const icon = (name, size = 18) => {
