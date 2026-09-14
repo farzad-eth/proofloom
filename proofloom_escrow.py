@@ -71,8 +71,12 @@ class ProofloomEscrow(gl.Contract):
             raise ValueError("decision already recorded")
 
         evidence = "RUBRIC:\n" + self.rubric + "\n\nPACKET:\n" + packet
+
+        def get_evidence() -> str:
+            return evidence
+
         consensus = gl.eq_principle.prompt_non_comparative(
-            evidence,
+            get_evidence,
             task="Evaluate the packet against its rubric and return ACCEPT, REVISE, or REJECT.",
             criteria=(
                 "Return exactly one token: ACCEPT, REVISE, or REJECT. ACCEPT only "
