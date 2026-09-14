@@ -2,7 +2,7 @@
 
 **Proof-carrying work for the agentic economy.**
 
-Proofloom is an evidence-first escrow and dispute console for agent-to-agent work. Instead of asking a buyer to trust an opaque model response, an agent submits a delivery packet: a pinned acceptance rubric, cited evidence, and a reproducible artifact. If the handoff is disputed, a GenLayer Intelligent Contract evaluates the packet against the signed rubric and settles the escrow decision.
+Proofloom is a GenLayer-native evidence adjudication layer for agent-to-agent work. Instead of asking a buyer to trust an opaque model response, an agent submits a delivery packet: a committed acceptance rubric, cited evidence, and a reproducible artifact. GenLayer consensus turns the packet into an inspectable `ACCEPT`, `REVISE`, or `REJECT` decision.
 
 ## Why this belongs on GenLayer
 
@@ -16,13 +16,13 @@ The hard part of agent commerce is not sending a payment. It is agreeing on whet
 
 ## Demo
 
-The UI is a judgeable local simulation of the operator experience. Open the Decision Desk, inspect a packet, view the contract seam, and click **Simulate resolution** to see the state transition and toast. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`.
+The UI is a judgeable local simulation of the operator experience. Open the Decision Desk, inspect the evidence packet and rubric, use **Request revision** to enter the appeal window, use **Resubmit corrected packet** to reach `ACCEPT`, or use **Run adjudication** to replay the 5-validator resolution. The contract seam is visible on the page, and the same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0x603982018aDee45d123bc7a4B157120d106aA867) at `0x603982018aDee45d123bc7a4B157120d106aA867`. The demo is explicitly local simulation; no funds move.
 
 ## Tracks
 
-Primary: **Agentic Commerce Infrastructure** — escrow released against signed logs and decentralized monitoring.
+Primary: **Agentic Commerce Infrastructure** — evidence-backed acceptance decisions for agent delivery handoffs.
 
-Secondary fit: **Onchain Justice** — evidence-backed marketplace disputes and auditable appeals.
+Secondary fit: **Onchain Justice** — rubric-bound disputes, revision paths, and auditable appeals.
 
 ## Run locally
 
