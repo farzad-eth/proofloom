@@ -15,13 +15,13 @@ This sheet contains copy-ready content for the Agent Tank form. It uses only cla
 ## Project summary
 
 ```text
-Proofloom is an evidence-first adjudication layer for agent work: delivery packets are evaluated against committed rubrics through GenLayer consensus.
+Proofloom is the adjudication layer for Agent Credit Score: GenLayer consensus turns agent work, evidence, and disputes into portable ACCEPT, REVISE, or REJECT reputation events.
 ```
 
 ## Project overview
 
 ```text
-Proofloom is an evidence-first adjudication layer for agent-to-agent work. A buyer or team defines a natural-language acceptance rubric before delivery. An agent submits a delivery packet with cited evidence and a reproducible artifact. Proofloom records rubric and packet commitments, evaluates the packet against the rubric through GenLayer's non-comparative Equivalence Principle, and normalizes consensus to ACCEPT, REVISE, or REJECT. The operator console exposes the evidence trail, rubric, packet status, validator surface, and appeal state. The build includes a public responsive demo and a Python Intelligent Contract deployed on GenLayer Studionet. It is a testnet prototype: the contract does not custody or transfer production funds, enforce caller roles or deadlines, verify supplied hashes, or implement appeal bonds. Those controls belong in a separately audited production escrow module.
+Proofloom is the adjudication primitive for an on-chain Agent Credit Score. A buyer or team defines a natural-language acceptance rubric before delivery. An agent submits a delivery packet with cited evidence and a reproducible artifact. Proofloom records rubric and packet commitments, evaluates the packet against the rubric through GenLayer's non-comparative Equivalence Principle, and normalizes consensus to ACCEPT, REVISE, or REJECT. A finalized ACCEPT becomes an evidence-backed reputation event eligible for a future portable agent history; REVISE and REJECT remain visible as accountable outcomes rather than opaque score changes. The operator console exposes the evidence trail, rubric, packet status, validator surface, appeal state, and reputation-event status. The build includes a public responsive demo and a Python Intelligent Contract deployed on GenLayer Studionet. It is a testnet prototype: the contract does not yet aggregate historical scores, attach identity-weighted reputation, custody or transfer production funds, enforce caller roles or deadlines, verify supplied hashes, or implement appeal bonds. Those controls belong in the next protocol layer and a separately audited production module.
 ```
 
 ## How-to steps
@@ -47,7 +47,7 @@ Click "View contract" in the demo, then open the linked Studionet contract. Alte
 ### Step 4 — Run the product demonstration
 
 ```text
-Click "Request revision" to demonstrate a missing rubric requirement and the appeal/revision window. Then click "Resubmit locally" to return the packet to ACCEPT. For the live path, connect a wallet with test GEN, click "Adjudicate on testnet" or "Open on-chain appeal", approve the wallet request, and wait for the GenLayer decision before the UI refreshes the contract status. Finally click "Run simulation" to replay the instant local reviewer walkthrough.
+Click "Request revision" to demonstrate a missing rubric requirement and the appeal/revision window. Observe that the reputation event is held rather than counted. Then click "Resubmit locally" to return the packet to ACCEPT and observe the eligible evidence-backed reputation event. For the live path, connect a wallet with test GEN, click "Adjudicate on testnet" or "Open on-chain appeal", approve the wallet request, and wait for the GenLayer decision before the UI refreshes the contract status. Finally click "Run simulation" to replay the instant local reviewer walkthrough.
 ```
 
 ### Step 5 — Inspect the implementation
