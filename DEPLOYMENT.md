@@ -54,3 +54,14 @@ The contract at the address above is the reputation-aware v0.3.0 instance. Its c
 A full-consensus adjudication was exercised in GenLayer Studio on 2026-09-14 with a passing Europe Q3 climate packet. The adjudication transaction reached `ACCEPTED` and then `FINALIZED`; the resulting state update appends an ACCEPT reputation event and increases the score by 10 points. The deployment transaction was `0x6d74fc7c5077098d955fac645981e5edc884aa5fa7367bc7afdb7aefbee0646b`, and the adjudication transaction was `0x4c3a6c42f578e00c1046410d2321e7eb45b2c058878683b6bf274ce2d556b505`.
 
 This remains a testnet prototype. The score is an explicit, transparent aggregation primitive—not a claim of production identity reputation. Caller authorization, hash verification, deadlines, appeal bonds, and multi-agreement aggregation remain required before valuable assets or formal credit decisions are supported.
+
+## Corrected runtime-compatible deployment
+
+After the earlier `prompt_non_comparative(..., input=...)` failure, the consensus call was changed to the runtime-compatible mixed form: the packet is positional, while `task=` and `criteria=` are named. The corrected contract was deployed and accepted by Studionet at:
+
+- Contract: `0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`
+- Deployment transaction: `0xcf670461cdf2b89d6bfed1729657f8e0cd00b9115936fa6287365ff77be7d65`
+- Verification adjudication: `0x7d895c4c4d40da4f040c78d4ddad0308867c9307ff7447bea1e40f8c86377994`
+- Verification result: `ACCEPTED` after full-consensus proposal, commit, reveal, and consensus completion.
+
+The production frontend and all submission materials now point to this corrected address. The previous instance should not be used for reviewer testing.
