@@ -67,7 +67,7 @@ function render() {
                 <div class="rubric-panel"><div class="panel-label">COMMITTED RUBRIC <a href="#contract">inspect seam ${icon('arrow',13)}</a></div><h4>Climate brief · Europe Q3</h4><ul><li class="done">8+ primary sources</li><li class="done">Claims traceable to evidence</li><li class="done">Under 2,000 words</li><li class="${revised ? 'missing' : 'done'}">State confidence and limitations</li></ul><div class="confidence"><div><span>VALIDATOR CONFIDENCE</span><strong>${state.confidence}%</strong></div><div class="confidence-bar"><span style="width:${state.confidence}%"></span></div><small>Independent validators evaluate semantic equivalence, not identical prose.</small></div></div>
               </div>
               <div class="reputation-event ${revised ? 'held' : resolved ? 'earned' : ''}"><div class="reputation-event-mark">${icon(resolved ? 'check' : revised ? 'rotate' : 'shield',18)}</div><div class="reputation-event-copy"><div class="panel-label">REPUTATION EVENT <span>${resolved ? 'ELIGIBLE' : revised ? 'HELD' : 'PENDING'}</span></div><strong>${resolved ? 'ACCEPT · climate brief / Europe Q3' : revised ? 'REVISE · evidence gap identified' : 'PENDING · awaiting adjudication'}</strong><small>${resolved ? 'Evidence-backed completion event for a future portable agent history.' : revised ? 'No positive reputation event is recorded until the corrected packet is accepted.' : 'A credit event is created only after the committed rubric is adjudicated.'}</small>${state.reputation ? `<small class="mono">ON-CHAIN PROFILE · ${state.reputation}</small>` : ''}</div><div class="reputation-event-tag">AGENT CREDIT<br />SCORE INPUT</div></div>
-              <div class="detail-actions"><button class="button primary" data-action="run">${icon(resolved ? 'rotate' : 'check',15)} ${resolved ? 'Run another review' : 'Run simulation'}</button><button class="button onchain" data-chain-action="adjudicate">${icon('zap',15)} Submit adjudication</button><button class="button ghost" data-chain-action="appeal">Open on-chain appeal</button><button class="button ghost" data-action="revise">${icon('rotate',15)} ${revised ? 'Resubmit locally' : 'Request revision'}</button></div>
+              <div class="detail-actions"><button class="button primary" data-action="run">${icon(resolved ? 'rotate' : 'check',15)} ${resolved ? 'Run another review' : 'Run simulation'}</button><button class="button onchain" data-chain-action="open">${icon('link',15)} Open new agreement</button><button class="button onchain" data-chain-action="adjudicate">${icon('zap',15)} Submit adjudication</button><button class="button ghost" data-chain-action="appeal">Open on-chain appeal</button><button class="button ghost" data-action="revise">${icon('rotate',15)} ${revised ? 'Resubmit locally' : 'Request revision'}</button></div>
             </article>
           </div>
         </section>
@@ -140,8 +140,12 @@ async function submitOnchain(kind) {
   if (kind === 'adjudicate' && chainState && !chainState.startsWith('PENDING') && !chainState.includes(':OPEN')) { state.toast = 'This agreement already has a decision; open a new agreement before adjudicating again'; render(); return; }
   try {
     const client = await loadClient();
-    const write = kind === 'appeal' ? { address: CONTRACT, functionName: 'open_appeal', args: ['Reviewer requested a second evidence review.'] } : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet'] };
-    state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : 'Preparing adjudication transaction…'; render();
+    const write = kind === 'appeal'
+      ? { address: CONTRACT, functionName: 'open_appeal', args: ['Reviewer requested a second evidence review.'] }
+      : kind === 'open'
+        ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
+        : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
+    state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
     const estimate = await client.estimateTransactionFeesForWrite(write);
     const txId = await client.writeContract({ ...write, account: { address: state.wallet, type: 'json-rpc' }, value: 0n, fees: { distribution: estimate.distribution, feeValue: estimate.feeValue } });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
@@ -149,7 +153,7 @@ async function submitOnchain(kind) {
     const decision = await client.waitForDecision({ hash: txId });
     if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.txExecutionResultName || 'execution failed'}`);
     await refreshOnchainProfile();
-    state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : 'On-chain adjudication reached consensus'; render();
+    state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : kind === 'open' ? 'New on-chain agreement opened' : 'On-chain adjudication reached consensus'; render();
   } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studionet network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
   setTimeout(() => { state.toast = ''; render(); }, 7000);
 }
