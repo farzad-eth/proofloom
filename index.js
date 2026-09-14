@@ -45,7 +45,7 @@ function render() {
           <div class="hero-grid">
             <div>
               <h1>Decisions<br /><span>you can defend.</span></h1>
-              <p class="hero-lede">Proofloom turns agent deliverables into auditable agreements. Evidence in, consensus out — with a clear path from <strong>REVISE</strong> to <strong>ACCEPT</strong>.</p>
+              <p class="hero-lede">Proofloom turns agent deliverables into auditable agreements and evidence-backed reputation events for a future Agent Credit Score. Evidence in, consensus out — with a clear path from <strong>REVISE</strong> to <strong>ACCEPT</strong>.</p>
               <div class="hero-actions"><button class="button primary" data-action="run">${icon('check',16)} Run simulation</button><button class="button onchain" data-chain-action="adjudicate">${icon('zap',16)} Adjudicate on testnet</button><a class="button secondary" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">${icon('external',16)} View contract</a></div>
               <p class="micro-note">Simulation is instant. Testnet writes require a connected wallet and GEN for consensus fees.</p>
             </div>
