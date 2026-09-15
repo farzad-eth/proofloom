@@ -65,7 +65,7 @@ function render() {
             </div>
             <div class="hero-proof">
               <div class="proof-orbit orbit-a"></div><div class="proof-orbit orbit-b"></div>
-              <div class="proof-card"><div class="proof-card-top"><span class="status-label">${resolved ? 'CONSENSUS COMPLETE' : 'CONSENSUS READY'}</span><span class="mono">5/5 validators</span></div><div class="proof-mark">${icon(resolved ? 'check' : 'shield', 42)}</div><div class="proof-card-title">${resolved ? 'ACCEPT' : revised ? 'REVISE' : 'PENDING'}</div><div class="proof-card-sub">${resolved ? 'Evidence satisfies the committed rubric' : revised ? 'Add the missing evidence, then resubmit' : 'Rubric + packet are ready for review'}</div><div class="proof-card-foot"><span>Equivalence Principle</span><span class="mono">v0.3.0</span></div></div>
+              <div class="proof-card"><div class="proof-card-top"><span class="status-label">${resolved ? 'CONSENSUS COMPLETE' : 'CONSENSUS READY'}</span><span class="mono">5/5 validators</span></div><div class="proof-mark">${icon(resolved ? 'check' : 'shield', 42)}</div><div class="proof-card-title">${resolved ? 'ACCEPT' : revised ? 'REVISE' : 'PENDING'}</div><div class="proof-card-sub">${resolved ? 'Evidence satisfies the committed rubric' : revised ? 'Add the missing evidence, then resubmit' : 'Rubric + packet are ready for review'}</div><div class="proof-card-foot"><span>Equivalence Principle</span><span class="mono">v0.4.1 RC</span></div></div>
             </div>
           </div>
         </section>
@@ -88,9 +88,10 @@ function render() {
 
         <section class="contract-band" id="contract"><div class="contract-copy"><p class="section-kicker">GENLAYER ADJUDICATION LAYER</p><h2>The contract seam is the product.</h2><p>Proofloom uses a Python Intelligent Contract and GenLayer's non-comparative Equivalence Principle to turn a rubric plus evidence packet into a normalized state transition and append-only reputation event.</p><div class="contract-meta"><div><span>NETWORK</span><strong><i class="pulse"></i> GenLayer Studio Next · 61997</strong></div><div><span>ADDRESS</span><button class="address-copy" data-copy="${CONTRACT}" title="Copy contract address"><code>${CONTRACT.slice(0,10)}…${CONTRACT.slice(-8)}</code>${icon('link',13)}</button></div><div><span>PUBLIC METHODS</span><strong>adjudicate · get_reputation · get_history</strong></div></div><a class="text-link" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">Inspect deployed Studio Next contract ${icon('external',14)}</a></div><div class="contract-terminal"><div class="terminal-top"><span></span><span></span><span></span><label>proofloom_escrow_studionext.py</label></div><pre><span class="muted">@gl.public.write</span>
 <span class="blue">def</span> adjudicate(packet, packet_hash):
+  evidence = rubric + packet
   consensus = gl.eq_principle
     .prompt_non_comparative(
-      input=rubric + packet,
+      <span class="green">lambda: evidence</span>,
       task=<span class="green">"Evaluate against rubric"</span>
     )
   <span class="blue">return</span> ACCEPT | REVISE | REJECT</pre><div class="terminal-status"><span class="pulse"></span> state: <strong>${state.onchainStatus || state.decision+':'+(resolved ? 'RELEASED' : 'HELD')+':'+(state.phase === 'APPEAL WINDOW' ? 'OPEN' : 'NONE')}</strong>${state.txHash ? `<a class="tx-inline" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">tx ${state.txHash.slice(0,10)}…</a>` : ''}</div></div></section>
