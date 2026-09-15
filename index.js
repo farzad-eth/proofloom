@@ -168,15 +168,21 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    // Consensus v0.6 writes are fee-funded. Always quote the exact call first
-    // and pass the returned distribution and feeValue unchanged.
-    const fees = await client.estimateTransactionFeesForWrite({ ...write, account: state.wallet, executionHeadroomBps: 12000n, messageHeadroomBps: 12000n });
-    state.toast = fees.gasless ? 'Submitting gasless Studio Next transaction…' : `Quoted ${fees.feeValue.toString()} wei deposit; submitting…`; render();
-    const txId = await client.writeContract({ ...write, fees });
+    // Use the official RC transaction-kit flow. It builds the fee policy quote,
+    // strips unsupported fee fields for gasless Studio, and submits the exact
+    // distribution/value shape expected by the Studio Next RPC.
+    const tx = { kind: 'write', address: write.address, method: write.functionName, args: write.args };
+    const quote = await state.transactionKit.estimate({ preset: 'standard' }, tx);
+    state.toast = quote.gasless ? 'Submitting gasless Studio Next transaction…' : `Quoted ${quote.feeValue.toString()} wei deposit; submitting…`; render();
+    const submitted = await state.transactionKit.submit(quote, tx);
+    const txId = submitted.genlayerTxId;
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
-    const decision = await client.waitForDecision({ hash: txId });
-    if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.executionResultName || decision.txExecutionResultName || 'execution failed'}`);
+    const finalStatus = await state.transactionKit.track(txId, (status) => {
+      state.onchainStatus = `${String(status.statusName || status.phase).toUpperCase()}:${txId.slice(0,10)}…`;
+      render();
+    }, { until: 'finalized' });
+    if (finalStatus.successful === false) throw new Error(`${finalStatus.statusName || 'transaction'} / ${finalStatus.executionResultName || 'execution failed'}`);
     await refreshOnchainProfile();
     state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : kind === 'open' ? 'New on-chain agreement opened' : 'On-chain adjudication reached consensus'; render();
   } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studio Next network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
