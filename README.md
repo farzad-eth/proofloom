@@ -16,13 +16,13 @@ The hard part of agent commerce is not sending a payment. It is agreeing on whet
 
 ## Demo
 
-The UI includes both a fast local simulation and a real browser-wallet testnet path. Open the Decision Desk, inspect the evidence packet and rubric, use **Run simulation** for the instant reviewer walkthrough, or connect a wallet and use **Adjudicate on testnet** / **Open on-chain appeal** to submit a real GenLayer Studionet transaction. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studionet network, address, and public methods. The same adjudication shape is implemented by `proofloom_escrow.py` and deployed to [GenLayer Studionet](https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181) at `0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`.
+The UI includes both a fast local simulation and a real browser-wallet testnet path. Open the Decision Desk, inspect the evidence packet and rubric, use **Run simulation** for the instant reviewer walkthrough, or connect a wallet and use **Adjudicate on testnet** / **Open on-chain appeal** to submit a real GenLayer Studio Next transaction. The deployed contract is linked directly in the header, packet status, and contract panel; the panel exposes its Studio Next network, address, and public methods. The Studio Next-compatible contract is deployed at [the Studio Next contract](https://explorer-studio-dev.genlayer.com/address/0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0) at `0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0`.
 
 The Decision Desk also surfaces a **Reputation Event**. An accepted packet is marked eligible as an Agent Credit Score input; pending, revised, or appealed packets are not treated as positive history. The current prototype does not implement caller authorization, deadlines, hash-to-artifact verification, appeal bonds, or production funds custody, and its score is intentionally a transparent testnet primitive rather than a production identity claim.
 
 ### Wallet and testnet flow
 
-Click **Connect wallet** in the top bar. Proofloom requests the browser wallet account, switches to or adds GenLayer Studionet (`chainId 61999`), reads the deployed contract status, and submits the selected write through the browser-wallet transport in GenLayerJS. The wallet must hold test GEN for consensus fees and gas. After submission, the UI keeps the transaction hash visible and waits for the GenLayer decision before refreshing `get_status`.
+Click **Connect wallet** in the top bar. Proofloom requests the browser wallet account, switches to or adds GenLayer Studio Next (`chainId 61997`), reads the deployed contract status, estimates the fee-funded write using the matching `genlayer-js@2.0.0-rc.1` SDK, and submits the returned fee distribution and deposit through the browser-wallet transport. The wallet may need test GEN for the quoted consensus deposit. After submission, the UI keeps the transaction hash visible and waits for both the GenLayer decision and successful execution before refreshing `get_status`.
 
 ## Tracks
 
@@ -39,7 +39,7 @@ pnpm dev
 
 ## Contract starter
 
-`proofloom_escrow.py` is a Studio-compatible Python Intelligent Contract that commits a rubric, evaluates an evidence packet with GenLayer's non-comparative Equivalence Principle, normalizes the outcome to `ACCEPT`, `REVISE`, or `REJECT`, holds the recorded outcome during an appeal, and updates a persistent score plus reputation history after consensus. Its schema has been validated against the current Studionet RPC, deployed at `0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`, and exercised through a finalized full-consensus adjudication. It deliberately does **not** custody or transfer real tokens, verify that a supplied hash matches its text, enforce deadlines, or authorize callers. Before production, add those controls, independently audit the contract, and introduce escrow/appeal-bond accounting only after that review.
+`proofloom_escrow_studionext.py` is the Studio Next-compatible Python Intelligent Contract. It commits a rubric, evaluates an evidence packet with GenLayer's non-comparative Equivalence Principle, normalizes the outcome to `ACCEPT`, `REVISE`, or `REJECT`, holds the recorded outcome during an appeal, and updates a persistent score plus reputation history after consensus. Its Studio Next instance is deployed at `0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0` on chain `61997`, with the deployment finalized in Studio Dev. It deliberately does **not** custody or transfer real tokens, verify that a supplied hash matches its text, enforce deadlines, or authorize callers. Before production, add those controls, independently audit the contract, and introduce escrow/appeal-bond accounting only after that review.
 
 ## Product principles
 

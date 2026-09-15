@@ -1,11 +1,13 @@
 # Proofloom Deployment Verification
 
-**Status:** Verified on GenLayer Studionet
-**Contract address:** [`0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`](https://explorer-studio.genlayer.com/address/0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181)
-**Network:** GenLayer Studionet
-**Verification date:** 2026-09-14
+**Status:** Studio Next migration verified; historical Studionet deployment retained below
+**Current contract address:** [`0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0`](https://explorer-studio-dev.genlayer.com/address/0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0)
+**Network:** GenLayer Studio Next / Studio Dev, chain `61997`
+**Verification date:** 2026-09-15
 
 ## Conclusion
+
+The hackathon-required Studio Next migration is complete. The current frontend target is the Studio Next/Studio Dev deployment at `0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0`, using the canonical RPC `https://studio-dev.genlayer.com/api`, chain ID `61997`, `genlayer-js@2.0.0-rc.1`, and `@genlayer/transaction-kit@0.1.0-rc.2`. The frontend now quotes fee-funded writes through the v2 SDK and only treats a transaction as successful when both decision status and execution result succeed.
 
 Proofloom now has a deployed, publicly inspectable **Intelligent Contract** on GenLayer Studionet. The contract stores a committed delivery rubric and its external hash, accepts an evidence packet and packet hash, uses GenLayer's non-comparative Equivalence Principle to reach a normalized adjudication outcome, and exposes an appeal state. The public product remains available at [proofloom-one.vercel.app](https://proofloom-one.vercel.app), and its source repository is [farzad-eth/proofloom](https://github.com/farzad-eth/proofloom).
 
@@ -65,3 +67,36 @@ After the earlier `prompt_non_comparative(..., input=...)` failure, the consensu
 - Verification result: `ACCEPTED` after full-consensus proposal, commit, reveal, and consensus completion.
 
 The production frontend and all submission materials now point to this corrected address. The previous instance should not be used for reviewer testing.
+
+## Runtime fix for transaction `0xaed264bca95dc4b4cb720e9b3c15de0e7d335435f7f8183048440a8b2deba129`
+
+The failed call reached consensus but returned a GenVM contract error: `TypeError: 'str' object is not callable`. The cause was passing the evidence string directly as the first argument to `prompt_non_comparative`; the current GenLayer API requires a zero-argument callable that returns the input data. The contract now wraps the evidence in `get_evidence()` and passes that callable. The corrected code was committed as `16b93e2` and upgraded on the existing Studionet instance.
+
+The upgrade transaction finalized successfully at `0x394a7734c8e20b2fbd7a152e6560a9429b4fa3da3c17d3e5bc9c81bc45d84b6c`. The failed transaction did not mutate reputation state or transfer funds.
+
+## Final live adjudication verification
+
+After upgrading the deployed contract with the callable-input fix, a fresh agreement was opened successfully and the live adjudication call was submitted against contract `0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181`.
+
+- Upgrade transaction: `0x54c37504b156a9217387b51a4de30e7108205c3a505797e503a890e70fee0d5b` — FINALIZED
+- Fresh agreement transaction: `0x56cc306bfd7e0780ded08f2e2db7c081b1ab41e5bc0f40db8317ffbd7b391b41` — FINALIZED
+- Final live adjudication transaction: `0xa368f27ab64f5dee2b102c6a2c7c3ce2b900a18bc2b2db7779ae4e33d5002e8d`
+- Adjudication result observed in Studio: `ACCEPTED`; consensus reached; GenVM execution completed without the former `TypeError: 'str' object is not callable`.
+- Test packet hash: `sha256:8f1-demo-packet-v2`
+
+Explorer link: https://explorer-studio.genlayer.com/tx/0xa368f27ab64f5dee2b102c6a2c7c3ce2b900a18bc2b2db7779ae4e33d5002e8d
+
+## Expected duplicate-adjudication guard
+
+Transaction `0x6b182429008c10ccb25ee4ce8cdde8406c2f7529cd8a12939c5d0585b0453d4a` targeted the correct contract and called `adjudicate`, but was submitted after the agreement already had a recorded decision. The contract intentionally reverted with `ValueError("decision already recorded")`; no reputation mutation or fund movement occurred. A new adjudication requires opening a new agreement first, or opening an appeal when the product flow permits it.
+
+## Studio Next deployment
+
+The hackathon notice requires deployment on Studio Next rather than stable Studionet. The compatible Studio Dev environment uses RPC `https://studio-dev.genlayer.com/api`, chain ID `61997`, and explorer `https://explorer-studio-dev.genlayer.com/`. The Studio Next-compatible source is `proofloom_escrow_studionext.py` and the finalized deployment is:
+
+- Contract: `0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0`
+- Deployment transaction: `0x613d18378a89f1617626f8e59005c9234e32c76a09c36cd5be2b5b9fb5e8064a`
+- Deployment status: `FINALIZED`
+- SDK stack: `genlayer-js@2.0.0-rc.1`, `@genlayer/transaction-kit@0.1.0-rc.2`
+
+The public app now switches wallets to chain `61997`, uses the `studioDevnet` chain definition, estimates the exact fee distribution for each write, submits the returned `distribution` and `feeValue`, and verifies the execution result in addition to the consensus status. The earlier Studionet deployment remains in this document as historical verification evidence and is not the current hackathon frontend target.

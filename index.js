@@ -1,10 +1,12 @@
-// Studionet's current hosted RPC is compatible with the legacy SDK's
-// protocol-call encoder; the v2 fee estimator expects unavailable RPC methods.
-const SDK_URL = 'https://esm.sh/genlayer-js@1.1.8?bundle';
-const CHAINS_URL = 'https://esm.sh/genlayer-js@1.1.8/chains?bundle';
-const STUDIONET_CHAIN_ID = '0xf22f';
-const CONTRACT = '0xaE9aaa259AF3DA090994DfdDD0741AA97fbaf181';
-const CONTRACT_URL = `https://explorer-studio.genlayer.com/address/${CONTRACT}`;
+// Consensus v0.6 / Studio Next RC stack. Keep the chain object and RPC
+// together; Studio Dev (61997) is separate from stable Studionet (61999).
+const SDK_URL = 'https://esm.sh/genlayer-js@2.0.0-rc.1?bundle';
+const CHAINS_URL = 'https://esm.sh/genlayer-js@2.0.0-rc.1/chains?bundle';
+const TRANSACTION_KIT_URL = 'https://esm.sh/@genlayer/transaction-kit@0.1.0-rc.2?bundle';
+const STUDIO_NEXT_CHAIN_ID = '0xf11d';
+const STUDIO_NEXT_RPC = 'https://studio-dev.genlayer.com/api';
+const CONTRACT = '0x7b996DCf65D77900753a243b99e0F8F7EE7a91a0';
+const CONTRACT_URL = `https://explorer-studio-dev.genlayer.com/address/${CONTRACT}`;
 
 const cases = [
   { id: 'PL-042', title: 'Climate brief · Europe Q3', agent: 'atlas-researcher', status: 'UNDER REVIEW', tone: 'review', amount: '240 USDC demo value', confidence: 86, updated: '2 min ago', source: 'GitHub gist + 8 cited sources' },
@@ -12,7 +14,7 @@ const cases = [
   { id: 'PL-039', title: 'Vendor shortlist · robotics', agent: 'scout-7b', status: 'RESOLVED', tone: 'resolved', amount: '95 USDC demo value', confidence: 94, updated: 'Yesterday', source: 'Notion packet + 12 URLs' },
 ];
 
-const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
+const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, transactionKit: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
 
 function getWalletProvider() {
   if (window.rabby?.request) return window.rabby;
@@ -48,7 +50,7 @@ function render() {
         <header class="topbar">
           <a class="brand" href="#top" aria-label="Proofloom home"><img src="/proofloom-logo.png" alt="" /><span>proofloom</span><em>evidence layer</em></a>
           <nav class="topnav" aria-label="Primary"><a class="nav-active" href="#desk">Decision desk</a><a href="#contract">Contract console</a><a href="#how">How it works</a></nav>
-          <div class="network-chip"><span class="pulse"></span> Studionet <small>5 validators</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="connect">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x297E…7B90</code>${icon('external',12)}</a>
+          <div class="network-chip"><span class="pulse"></span> Studio Next <small>RC · 61997</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="connect">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x7b99…91a0</code>${icon('external',12)}</a>
       </header>
 
       <main id="top">
@@ -59,7 +61,7 @@ function render() {
               <h1>Decisions<br /><span>you can defend.</span></h1>
               <p class="hero-lede">Proofloom turns agent deliverables into auditable agreements and evidence-backed reputation events for a future Agent Credit Score. Evidence in, consensus out — with a clear path from <strong>REVISE</strong> to <strong>ACCEPT</strong>.</p>
               <div class="hero-actions"><button class="button primary" data-action="run">${icon('check',16)} Run simulation</button><button class="button onchain" data-chain-action="adjudicate">${icon('zap',16)} Adjudicate on testnet</button><a class="button secondary" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">${icon('external',16)} View contract</a></div>
-              <p class="micro-note">Simulation is instant. Testnet writes require a connected wallet and GEN for consensus fees.</p>
+          <p class="micro-note">Simulation is instant. Studio Next writes require a connected wallet; the RC fee estimator quotes the required deposit and refund.</p>
             </div>
             <div class="hero-proof">
               <div class="proof-orbit orbit-a"></div><div class="proof-orbit orbit-b"></div>
@@ -84,7 +86,7 @@ function render() {
           </div>
         </section>
 
-        <section class="contract-band" id="contract"><div class="contract-copy"><p class="section-kicker">GENLAYER ADJUDICATION LAYER</p><h2>The contract seam is the product.</h2><p>Proofloom uses a Python Intelligent Contract and GenLayer's non-comparative Equivalence Principle to turn a rubric plus evidence packet into a normalized state transition and append-only reputation event.</p><div class="contract-meta"><div><span>NETWORK</span><strong><i class="pulse"></i> GenLayer Studionet</strong></div><div><span>ADDRESS</span><button class="address-copy" data-copy="${CONTRACT}" title="Copy contract address"><code>${CONTRACT.slice(0,10)}…${CONTRACT.slice(-8)}</code>${icon('link',13)}</button></div><div><span>PUBLIC METHODS</span><strong>adjudicate · get_reputation · get_history</strong></div></div><a class="text-link" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">Inspect deployed Studionet contract ${icon('external',14)}</a></div><div class="contract-terminal"><div class="terminal-top"><span></span><span></span><span></span><label>proofloom_escrow.py</label></div><pre><span class="muted">@gl.public.write</span>
+        <section class="contract-band" id="contract"><div class="contract-copy"><p class="section-kicker">GENLAYER ADJUDICATION LAYER</p><h2>The contract seam is the product.</h2><p>Proofloom uses a Python Intelligent Contract and GenLayer's non-comparative Equivalence Principle to turn a rubric plus evidence packet into a normalized state transition and append-only reputation event.</p><div class="contract-meta"><div><span>NETWORK</span><strong><i class="pulse"></i> GenLayer Studio Next · 61997</strong></div><div><span>ADDRESS</span><button class="address-copy" data-copy="${CONTRACT}" title="Copy contract address"><code>${CONTRACT.slice(0,10)}…${CONTRACT.slice(-8)}</code>${icon('link',13)}</button></div><div><span>PUBLIC METHODS</span><strong>adjudicate · get_reputation · get_history</strong></div></div><a class="text-link" href="${CONTRACT_URL}" target="_blank" rel="noreferrer">Inspect deployed Studio Next contract ${icon('external',14)}</a></div><div class="contract-terminal"><div class="terminal-top"><span></span><span></span><span></span><label>proofloom_escrow_studionext.py</label></div><pre><span class="muted">@gl.public.write</span>
 <span class="blue">def</span> adjudicate(packet, packet_hash):
   consensus = gl.eq_principle
     .prompt_non_comparative(
@@ -115,30 +117,31 @@ async function loadClient() {
   const walletProvider = getWalletProvider();
   if (!walletProvider) throw new Error('No EIP-1193 wallet provider detected');
   const sdk = await import(SDK_URL);
-  const { studionet } = await import(CHAINS_URL);
+  const { studioDevnet } = await import(CHAINS_URL);
+  const { createTransactionKit } = await import(TRANSACTION_KIT_URL);
   state.sdk = sdk;
-  // GenLayerJS v1 forwards wallet RPC methods only when account is an address
-  // string. Passing an account object makes eth_sendTransaction go to the
-  // GenLayer RPC instead of the browser wallet.
-  state.client = sdk.createClient({ chain: studionet, account: state.wallet, provider: walletProvider });
-  await state.client.connect('studionet');
+  state.client = sdk.createClient({ chain: studioDevnet, endpoint: STUDIO_NEXT_RPC, account: state.wallet, provider: walletProvider });
+  // Keep the matching RC Transaction Kit available for fee-aware integrations.
+  // The v2 client estimate is used below because it returns the authoritative
+  // distribution and feeValue in one object for this contract call.
+  state.transactionKit = createTransactionKit({ chain: studioDevnet, provider: walletProvider, account: state.wallet });
   state.chainReady = true;
   return state.client;
 }
 
 async function connectWallet() {
   const walletProvider = getWalletProvider();
-  if (!walletProvider) { state.toast = 'Install a wallet such as MetaMask to use Studionet'; render(); return; }
+  if (!walletProvider) { state.toast = 'Install a wallet such as MetaMask to use Studio Next'; render(); return; }
   try {
     const accounts = await walletProvider.request({ method: 'eth_requestAccounts' });
     state.wallet = accounts[0];
-    try { await walletProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID }] }); } catch (switchError) {
-      if (switchError?.code === 4902) await walletProvider.request({ method: 'wallet_addEthereumChain', params: [{ chainId: STUDIONET_CHAIN_ID, chainName: 'GenLayer Studionet', nativeCurrency: { name: 'GEN Token', symbol: 'GEN', decimals: 18 }, rpcUrls: ['https://studio.genlayer.com/api'], blockExplorerUrls: ['https://explorer-studio.genlayer.com'] }] });
+    try { await walletProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: STUDIO_NEXT_CHAIN_ID }] }); } catch (switchError) {
+      if (switchError?.code === 4902) await walletProvider.request({ method: 'wallet_addEthereumChain', params: [{ chainId: STUDIO_NEXT_CHAIN_ID, chainName: 'GenLayer Studio Next', nativeCurrency: { name: 'GEN Token', symbol: 'GEN', decimals: 18 }, rpcUrls: [STUDIO_NEXT_RPC], blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com'] }] });
       else throw switchError;
     }
     await loadClient();
     await refreshOnchainProfile();
-    state.toast = 'Wallet connected to GenLayer Studionet';
+    state.toast = 'Wallet connected to GenLayer Studio Next';
   } catch (error) { state.toast = `Wallet connection failed: ${error?.shortMessage || error?.message || 'user rejected'}`; }
   render(); setTimeout(() => { state.toast = ''; render(); }, 5000);
 }
@@ -164,17 +167,18 @@ async function submitOnchain(kind) {
         ? { address: CONTRACT, functionName: 'open_agreement', args: ['Climate brief for Europe Q3: cite 8+ primary sources, make claims traceable, stay under 2000 words, and state confidence plus limitations.', 'sha256:8f1-demo-rubric-v2', 'atlas-researcher'] }
         : { address: CONTRACT, functionName: 'adjudicate', args: ['Climate brief for Europe Q3. Sources: European Environment Agency indicators and cited evidence. Requirements: 8 primary sources, traceable claims, under 2000 words, confidence and limitations.', 'sha256:demo-europe-q3-packet-v2'] };
     state.toast = kind === 'appeal' ? 'Preparing appeal transaction…' : kind === 'open' ? 'Preparing new agreement transaction…' : 'Preparing adjudication transaction…'; render();
-    // The client was initialized with the wallet address string. Do not pass
-    // that string again here: GenLayerJS v1 expects its normalized internal
-    // account object on write calls and otherwise reads address as undefined.
-    const txId = await client.writeContract({ ...write, value: 0n });
+    // Consensus v0.6 writes are fee-funded. Always quote the exact call first
+    // and pass the returned distribution and feeValue unchanged.
+    const fees = await client.estimateTransactionFeesForWrite({ ...write, account: state.wallet, executionHeadroomBps: 12000n, messageHeadroomBps: 12000n });
+    state.toast = fees.gasless ? 'Submitting gasless Studio Next transaction…' : `Quoted ${fees.feeValue.toString()} wei deposit; submitting…`; render();
+    const txId = await client.writeContract({ ...write, fees });
     state.txHash = txId; state.onchainStatus = `SUBMITTED:${txId.slice(0,10)}…`;
     state.toast = 'Testnet transaction submitted'; render();
     const decision = await client.waitForDecision({ hash: txId });
-    if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.txExecutionResultName || 'execution failed'}`);
+    if (state.sdk?.isSuccessful && !state.sdk.isSuccessful(decision)) throw new Error(`${decision.statusName || 'transaction'} / ${decision.executionResultName || decision.txExecutionResultName || 'execution failed'}`);
     await refreshOnchainProfile();
     state.toast = kind === 'appeal' ? 'On-chain appeal reached consensus' : kind === 'open' ? 'New on-chain agreement opened' : 'On-chain adjudication reached consensus'; render();
-  } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studionet network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
+  } catch (error) { const detail = error?.shortMessage || error?.details || error?.cause?.message || error?.message || 'check wallet, Studio Next network, and GEN balance'; state.toast = `Testnet write failed: ${detail}`; render(); }
   setTimeout(() => { state.toast = ''; render(); }, 7000);
 }
 
