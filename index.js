@@ -16,14 +16,28 @@ const cases = [
 
 const state = { phase: 'UNDER REVIEW', decision: 'PENDING', confidence: 86, toast: '', activeCase: cases[0], wallet: '', client: null, sdk: null, transactionKit: null, chainReady: false, txHash: '', onchainStatus: '', reputation: '' };
 
-function getWalletProvider() {
-  if (window.rabby?.request) return window.rabby;
-  if (window.Rabby?.request) return window.Rabby;
+function getWalletProviders() {
   const injected = window.ethereum;
-  const providers = injected?.providers?.length ? injected.providers : injected ? [injected] : [];
-  // Rabby may also expose isMetaMask for compatibility. Prefer its explicit
-  // marker first so a read-only GenLayer Snap is not selected accidentally.
-  return providers.find((provider) => provider.isRabby) || providers.find((provider) => provider.isBraveWallet) || providers.find((provider) => provider.isMetaMask) || providers[0] || null;
+  const candidates = [
+    window.okxwallet?.ethereum,
+    window.okxwallet,
+    window.rabby,
+    window.Rabby,
+    ...(injected?.providers?.length ? injected.providers : injected ? [injected] : []),
+  ].filter((provider) => provider?.request);
+  return [...new Set(candidates)];
+}
+
+function getWalletProvider() {
+  const providers = getWalletProviders();
+  // Prefer explicit wallet markers. Some OKX versions expose isOKExWallet,
+  // while newer versions expose isOkxWallet; both can coexist with a generic
+  // window.ethereum provider injected by another extension.
+  return providers.find((provider) => provider.isOkxWallet || provider.isOKExWallet) ||
+    providers.find((provider) => provider.isRabby) ||
+    providers.find((provider) => provider.isBraveWallet) ||
+    providers.find((provider) => provider.isMetaMask) ||
+    providers[0] || null;
 }
 
 const icon = (name, size = 18) => {
@@ -131,10 +145,21 @@ async function loadClient() {
 }
 
 async function connectWallet() {
-  const walletProvider = getWalletProvider();
-  if (!walletProvider) { state.toast = 'Install a wallet such as MetaMask to use Studio Next'; render(); return; }
+  const providers = getWalletProviders();
+  if (!providers.length) { state.toast = 'No browser wallet detected. Install or unlock OKX Wallet, MetaMask, Rabby, or another EIP-1193 wallet.'; render(); return; }
   try {
-    const accounts = await walletProvider.request({ method: 'eth_requestAccounts' });
+    let walletProvider = getWalletProvider();
+    let accounts = [];
+    const orderedProviders = [walletProvider, ...providers.filter((provider) => provider !== walletProvider)];
+    let lastError;
+    for (const provider of orderedProviders) {
+      try {
+        accounts = await provider.request({ method: 'eth_requestAccounts' });
+        if (Array.isArray(accounts) && accounts.length && accounts[0]) { walletProvider = provider; break; }
+        lastError = new Error('The selected wallet returned no accounts. Unlock the wallet and choose an account.');
+      } catch (error) { lastError = error; }
+    }
+    if (!Array.isArray(accounts) || !accounts.length || !accounts[0]) throw lastError || new Error('wallet must have at least one account');
     state.wallet = accounts[0];
     try { await walletProvider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: STUDIO_NEXT_CHAIN_ID }] }); } catch (switchError) {
       if (switchError?.code === 4902) await walletProvider.request({ method: 'wallet_addEthereumChain', params: [{ chainId: STUDIO_NEXT_CHAIN_ID, chainName: 'GenLayer Studio Next', nativeCurrency: { name: 'GEN Token', symbol: 'GEN', decimals: 18 }, rpcUrls: [STUDIO_NEXT_RPC], blockExplorerUrls: ['https://explorer-studio-dev.genlayer.com'] }] });
