@@ -64,7 +64,7 @@ function render() {
         <header class="topbar">
           <a class="brand" href="#top" aria-label="Proofloom home"><img src="/proofloom-logo.png" alt="" /><span>proofloom</span><em>evidence layer</em></a>
           <nav class="topnav" aria-label="Primary"><a class="nav-active" href="#desk">Decision desk</a><a href="#contract">Contract console</a><a href="#how">How it works</a></nav>
-          <div class="network-chip"><span class="pulse"></span> Studio Next <small>RC · 61997</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="connect">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x7b99…91a0</code>${icon('external',12)}</a>
+          <div class="network-chip"><span class="pulse"></span> Studio Next <small>RC · 61997</small></div><button class="wallet-button ${state.wallet ? 'connected' : ''}" data-wallet="${state.wallet ? 'disconnect' : 'connect'}">${icon('wallet',13)} ${state.wallet ? state.wallet.slice(0,6)+'…'+state.wallet.slice(-4) : 'Connect wallet'}</button><a class="contract-chip" href="${CONTRACT_URL}" target="_blank" rel="noreferrer"><span class="contract-dot">${icon('link',12)}</span> <span>Contract</span> <code>0x7b99…91a0</code>${icon('external',12)}</a>
       </header>
 
       <main id="top">
@@ -172,6 +172,20 @@ async function connectWallet() {
   render(); setTimeout(() => { state.toast = ''; render(); }, 5000);
 }
 
+function disconnectWallet() {
+  state.wallet = '';
+  state.client = null;
+  state.sdk = null;
+  state.transactionKit = null;
+  state.chainReady = false;
+  state.txHash = '';
+  state.onchainStatus = '';
+  state.reputation = '';
+  state.toast = 'Wallet disconnected';
+  render();
+  setTimeout(() => { state.toast = ''; render(); }, 3000);
+}
+
 async function refreshOnchainProfile() {
   if (!state.client) return;
   const status = await state.client.readContract({ address: CONTRACT, functionName: 'get_status', args: [], jsonSafeReturn: true });
@@ -216,6 +230,7 @@ async function submitOnchain(kind) {
 
 function bind() {
   document.querySelectorAll('[data-wallet="connect"]').forEach(el => el.addEventListener('click', connectWallet));
+  document.querySelectorAll('[data-wallet="disconnect"]').forEach(el => el.addEventListener('click', disconnectWallet));
   document.querySelectorAll('[data-chain-action]').forEach(el => el.addEventListener('click', () => submitOnchain(el.dataset.chainAction)));
   document.querySelectorAll('[data-action="run"]').forEach(el => el.addEventListener('click', run));
   document.querySelectorAll('[data-action="revise"]').forEach(el => el.addEventListener('click', revise));
